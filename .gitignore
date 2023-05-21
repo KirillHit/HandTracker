@@ -37,3 +37,13 @@
 
 # PyCharm
 __pycache__/
+
+# Vusual Studio
+.vs/
+packages/
+x64/
+*.sln
+*.vcxproj
+packages.config
+*.user
+*.filters
