@@ -44,3 +44,4 @@ packages/
 x64/
 *.user
 *.filters
+mediapipe/
