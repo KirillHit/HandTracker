@@ -42,8 +42,5 @@ __pycache__/
 .vs/
 packages/
 x64/
-*.sln
-*.vcxproj
-packages.config
 *.user
 *.filters
