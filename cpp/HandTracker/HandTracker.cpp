@@ -6,25 +6,32 @@
 using namespace std;
 
 int main() {
-    cv::VideoCapture capture(0);  // Открываем камеру по умолчанию (индекс 0)
+    // Открываем камеру по умолчанию (индекс 0)
+    cv::VideoCapture capture(0);
 
-    if (!capture.isOpened()) {  // Проверяем, удалось ли открыть камеру
+    // Проверяем, удалось ли открыть камеру
+    if (!capture.isOpened()) {  
         std::cout << "Failed to open the camera." << std::endl;
         return -1;
     }
 
-    cv::namedWindow("Camera", cv::WINDOW_NORMAL);  // Создаем окно для вывода изображения с камеры
+    // Создаем окно для вывода изображения с камеры
+    cv::namedWindow("Camera", cv::WINDOW_NORMAL);  
 
     while (true) {
         cv::Mat frame;
-        capture >> frame;  // Захватываем кадр с камеры
 
-        if (frame.empty()) {  // Проверяем, удалось ли захватить кадр
+        // Захватываем кадр с камеры
+        capture >> frame;
+
+        // Проверяем, удалось ли захватить кадр
+        if (frame.empty()) {
             std::cout << "Failed to capture frame." << std::endl;
             break;
         }
 
-        cv::imshow("Camera", frame);  // Выводим кадр в окно
+        // Выводим кадр в окно
+        cv::imshow("Camera", frame);
 
         // Проверяем нажатие клавиши "Esc"
         if (cv::waitKey(1) == 27) {
@@ -32,9 +39,11 @@ int main() {
         }
     }
 
-    capture.release();  // Освобождаем ресурсы
+    // Закрываем видео поток и освобождаем ресурсы
+    capture.release();  
 
-    cv::destroyAllWindows();  // Закрываем все окна
+    // Закрываем все окна
+    cv::destroyAllWindows();
 
     return 0;
 }
