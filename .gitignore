@@ -38,7 +38,10 @@
 # PyCharm
 __pycache__/
 
-# Vusual Studio
+# Ignore from Vlad
+cs/
+
+# Visual Studio
 .vs/
 packages/
 x64/
