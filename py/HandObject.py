@@ -26,7 +26,7 @@ class HandTracker:
         self.approx_t = np.zeros(self.LenApprox, dtype=np.int16)
 
         self.FixedParam = 3
-        self.Fixed_z_Modif = 4
+        self.FixedParam_Z = 14
         self.Fixed_x = 0
         self.Fixed_y = 0
         self.Fixed_z = 0
@@ -91,7 +91,7 @@ class HandTracker:
             self.Real_x = sum(self.approx_x[-i-1:])//(i+1)
             self.Real_y = sum(self.approx_y[-i-1:])//(i+1)
 
-            if (abs(self.Fixed_z - self.Real_z)) > self.FixedParam * self.Fixed_z_Modif:
+            if (abs(self.Fixed_z - self.Real_z)) > self.FixedParam_Z:
                 self.Fixed_z = self.Real_z
             if (abs(self.Fixed_y - self.Real_y)) > self.FixedParam:
                 self.Fixed_y = self.Real_y

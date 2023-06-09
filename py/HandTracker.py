@@ -16,36 +16,7 @@ if not success:
 height, width = image.shape[:2]
 
 HandTracker = Ho.HandTracker(height, width)
-'''
-def ChangeCalibDist(x):
-    HandTracker.CalibDist = x
-cv2.createTrackbar("CalibDist", "HandTracker", 500, 2000, ChangeCalibDist)
 
-def ChangeCalibCam(x):
-    HandTracker.CalibCam = x/100
-cv2.createTrackbar("CalibCam/100", "HandTracker", 83, 200, ChangeCalibCam)
-
-def ChangeCamAngle(x):
-    HandTracker.CamAngle = x * 3.14 / 180
-cv2.createTrackbar("CamAngle", "HandTracker", 90, 180, ChangeCamAngle)
-
-def ChangeTimeApprox(x):
-    HandTracker.TimeApprox = x
-cv2.createTrackbar("TimeApprox", "HandTracker", 300, 2000, ChangeTimeApprox)
-
-def ChangeTimeApprox(x):
-    HandTracker.TimeApprox = x
-    HandTracker.LenApprox = 60 * x // 1000
-cv2.createTrackbar("TimeApprox", "HandTracker", 300, 2000, ChangeTimeApprox)
-
-def ChangeFixedParam(x):
-    HandTracker.FixedParam = x
-cv2.createTrackbar("FixedParam", "HandTracker", 3, 20, ChangeFixedParam)
-
-def ChangeFixed_z_Modif(x):
-    HandTracker.FixedParam = x
-cv2.createTrackbar("Fixed_z_Modif", "HandTracker", 4, 20, ChangeFixed_z_Modif)
-'''
 prev_time = 0
 
 # ДОДЕЛАТЬ
