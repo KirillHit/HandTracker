@@ -70,7 +70,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="10,15">
          <item>
-          <widget class="QFrame" name="">
+          <widget class="QFrame" name="frame">
            <property name="frameShape">
             <enum>QFrame::Panel</enum>
            </property>
@@ -91,7 +91,7 @@
              <number>5</number>
             </property>
             <item>
-             <widget class="QFrame" name="">
+             <widget class="QFrame" name="frame">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
                 <horstretch>0</horstretch>
@@ -106,7 +106,7 @@
                 <number>5</number>
                </property>
                <item row="0" column="2">
-                <widget class="QPushButton" name="pushButton">
+                <widget class="QPushButton" name="Start_cam">
                  <property name="text">
                   <string>Обновить</string>
                  </property>
@@ -129,9 +129,9 @@
                 </widget>
                </item>
                <item row="0" column="1">
-                <widget class="QLineEdit" name="lineEdit">
+                <widget class="QLineEdit" name="NumCumEditLine">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -142,10 +142,25 @@
                    <height>0</height>
                   </size>
                  </property>
+                 <property name="baseSize">
+                  <size>
+                   <width>100</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>0</string>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="3">
                 <widget class="QLabel" name="label_2">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -162,7 +177,7 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1,10">
                <property name="spacing">
                 <number>5</number>
                </property>
@@ -188,10 +203,13 @@
                <item>
                 <widget class="QLineEdit" name="CalibDist">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>500</string>
                  </property>
                 </widget>
                </item>
@@ -207,6 +225,12 @@
                </item>
                <item>
                 <widget class="QLabel" name="label_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string/>
                  </property>
@@ -234,8 +258,11 @@
                 <property name="maximum">
                  <number>2000</number>
                 </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
                 <property name="value">
-                 <number>300</number>
+                 <number>500</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -248,10 +275,10 @@
                  <number>200</number>
                 </property>
                 <property name="pageStep">
-                 <number>10</number>
+                 <number>1</number>
                 </property>
                 <property name="value">
-                 <number>83</number>
+                 <number>80</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -278,6 +305,9 @@
                <widget class="QSlider" name="FixedParam">
                 <property name="maximum">
                  <number>20</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
                 </property>
                 <property name="value">
                  <number>3</number>
@@ -368,6 +398,9 @@
                 <property name="maximum">
                  <number>180</number>
                 </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
                 <property name="value">
                  <number>90</number>
                 </property>
@@ -410,11 +443,55 @@
                 <property name="maximum">
                  <number>20</number>
                 </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
                 <property name="value">
                  <number>4</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="topMargin">
+               <number>5</number>
+              </property>
+              <property name="bottomMargin">
+               <number>5</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label_11">
+                <property name="text">
+                 <string>Координаты руки:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="Hand_Coords">
+                <property name="styleSheet">
+                 <string notr="true">font: 75 14pt &quot;Calibri&quot;;
+color: rgb(0, 170, 0);</string>
+                </property>
+                <property name="text">
+                 <string>No hands</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_13">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>

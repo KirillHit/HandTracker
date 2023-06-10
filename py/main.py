@@ -7,42 +7,35 @@ import sys
 import mediapipe as mp
 import time
 import HandObject as Ho
+from PyQt5.QtWidgets import QMessageBox
+
+#pyuic5 -x PyQtWindow.ui -o PyQtWindow.p
 
 class VideoThread(QThread):
-    change_pixmap_signal = pyqtSignal(np.ndarray)
+    change_pixmap_signal = pyqtSignal(np.ndarray, list)
 
     def __init__(self):
         super().__init__()
         self._run_flag = True
+        self.height = 1
+        self.width = 1
+        self.cap = cv2.VideoCapture()
+
+    def set_cam(self, num_cum):
+        cap2 = cv2.VideoCapture(num_cum)
+        success, image = cap2.read()
+        if success:
+            self.cap = cap2
+            self.height, self.width = image.shape[:2]
+            return "Ok"
+        else:
+            return "Камера не найдена"
 
     def run(self):
-
-        """
-        # capture from web cam
-        cap = cv2.VideoCapture(0)
-        while self._run_flag:
-            ret, cv_img = cap.read()
-            if ret:
-
-                self.change_pixmap_signal.emit(cv_img)
-        # shut down capture system
-        cap.release()
-        """
-
         mp_drawing = mp.solutions.drawing_utils
         mp_hands = mp.solutions.hands
 
-        cap = cv2.VideoCapture(0)
-        success, image = cap.read()
-        if not success:
-            print("Ignoring empty camera frame.")
-            exit()
-        height, width = image.shape[:2]
-
-        HandTracker = Ho.HandTracker(height, width)
-
         prev_time = 0
-
         # ДОДЕЛАТЬ
         PrecisionParam = 2  # Устрание связи зависимости точности от разрешения камеры
 
@@ -51,15 +44,16 @@ class VideoThread(QThread):
                 max_num_hands=1,
                 min_detection_confidence=0.5,
                 min_tracking_confidence=0.5) as hands:
-            while cap.isOpened():
-                success, image = cap.read()
+            while True:
+                success, image = self.cap.read()
                 if not success:
-                    print("Ignoring empty camera frame.")
-                    break
+                    continue
 
                 image = cv2.flip(image, 1)
 
                 results = hands.process(image)
+
+                mes = []
 
                 if results.multi_hand_landmarks:
                     for hand_landmarks in results.multi_hand_landmarks:
@@ -73,9 +67,9 @@ class VideoThread(QThread):
                             hand_landmarks.landmark[mp_hands.HandLandmark.PINKY_MCP]
                         ]
                         # Заполнение матрицы точек руки
-                        all_x = [int(v.x * width * PrecisionParam) for v in Marks]
-                        all_y = [int(v.y * height * PrecisionParam) for v in Marks]
-                        all_z = [int(v.z * width * PrecisionParam) for v in
+                        all_x = [int(v.x * self.width * PrecisionParam) for v in Marks]
+                        all_y = [int(v.y * self.height * PrecisionParam) for v in Marks]
+                        all_z = [int(v.z * self.width * PrecisionParam) for v in
                                  Marks]  # Z использует примерно тот же масштаб, что и x
                         all_t = np.array([all_x, all_y, all_z], dtype=np.int32)
                         # Определение центра руки
@@ -107,22 +101,18 @@ class VideoThread(QThread):
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 1)
                         cv2.putText(image, f"Norm: {Norm}", (5, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 1)
 
-                        cv2.putText(image,
-                                    HandTracker.give_Hand((Center_x - width * PrecisionParam // 2,
-                                                           Center_y - height * PrecisionParam // 2),
-                                                          time.time_ns(), SizeFactor, PrecisionParam), (5, 100),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 1)
+                        mes = [(Center_x - self.width * PrecisionParam // 2,
+                                Center_y - self.height * PrecisionParam // 2),
+                                time.time_ns(), SizeFactor, PrecisionParam]
 
                 cur_time = time.time_ns()
                 fps = 10 ** 9 // (cur_time - prev_time)
                 prev_time = cur_time
                 cv2.putText(image, f"FPS: {str(fps)}", (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
-                cv2.circle(image, (width // 2, height // 2), 20, (0, 255, 0), 1)
+                cv2.circle(image, (self.width // 2, self.height // 2), 20, (0, 255, 0), 1)
+                self.change_pixmap_signal.emit(image, mes)
 
-                self.change_pixmap_signal.emit(image)
-                if cv2.waitKey(5) & 0xFF == 27:
-                    break
-        cap.release()
+        self.cap.release()
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
@@ -130,6 +120,11 @@ class VideoThread(QThread):
         self.wait()
 
 class Ui_MainWindow(object):
+    def __init__(self):
+        self.thread = VideoThread()
+        self.HandTracker = Ho.HandTracker()
+        self.Robot_mes_coords = ""
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1200, 600)
@@ -180,9 +175,9 @@ class Ui_MainWindow(object):
         self.gridLayout_3 = QtWidgets.QGridLayout(self.frame1)
         self.gridLayout_3.setContentsMargins(-1, 5, -1, 5)
         self.gridLayout_3.setObjectName("gridLayout_3")
-        self.pushButton = QtWidgets.QPushButton(self.frame1)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_3.addWidget(self.pushButton, 0, 2, 1, 1)
+        self.Start_cam = QtWidgets.QPushButton(self.frame1)
+        self.Start_cam.setObjectName("Start_cam")
+        self.gridLayout_3.addWidget(self.Start_cam, 0, 2, 1, 1)
         self.label = QtWidgets.QLabel(self.frame1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -192,16 +187,22 @@ class Ui_MainWindow(object):
         self.label.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.lineEdit = QtWidgets.QLineEdit(self.frame1)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.NumCumEditLine = QtWidgets.QLineEdit(self.frame1)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lineEdit.sizePolicy().hasHeightForWidth())
-        self.lineEdit.setSizePolicy(sizePolicy)
-        self.lineEdit.setMinimumSize(QtCore.QSize(0, 0))
-        self.lineEdit.setObjectName("lineEdit")
-        self.gridLayout_3.addWidget(self.lineEdit, 0, 1, 1, 1)
+        sizePolicy.setHeightForWidth(self.NumCumEditLine.sizePolicy().hasHeightForWidth())
+        self.NumCumEditLine.setSizePolicy(sizePolicy)
+        self.NumCumEditLine.setMinimumSize(QtCore.QSize(0, 0))
+        self.NumCumEditLine.setBaseSize(QtCore.QSize(100, 0))
+        self.NumCumEditLine.setObjectName("NumCumEditLine")
+        self.gridLayout_3.addWidget(self.NumCumEditLine, 0, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.frame1)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
         self.label_2.setText("")
         self.label_2.setObjectName("label_2")
         self.gridLayout_3.addWidget(self.label_2, 0, 3, 1, 1)
@@ -226,7 +227,7 @@ class Ui_MainWindow(object):
         self.lab_2.setObjectName("lab_2")
         self.horizontalLayout_2.addWidget(self.lab_2)
         self.CalibDist = QtWidgets.QLineEdit(self.horizontalFrame_2)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.CalibDist.sizePolicy().hasHeightForWidth())
@@ -237,9 +238,18 @@ class Ui_MainWindow(object):
         self.label_3.setObjectName("label_3")
         self.horizontalLayout_2.addWidget(self.label_3)
         self.label_4 = QtWidgets.QLabel(self.horizontalFrame_2)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
+        self.label_4.setSizePolicy(sizePolicy)
         self.label_4.setText("")
         self.label_4.setObjectName("label_4")
         self.horizontalLayout_2.addWidget(self.label_4)
+        self.horizontalLayout_2.setStretch(0, 1)
+        self.horizontalLayout_2.setStretch(1, 1)
+        self.horizontalLayout_2.setStretch(2, 1)
+        self.horizontalLayout_2.setStretch(3, 10)
         self.verticalLayout.addWidget(self.horizontalFrame_2)
         self.gridLayout_4 = QtWidgets.QGridLayout()
         self.gridLayout_4.setContentsMargins(-1, 7, -1, 7)
@@ -248,14 +258,15 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.TimeApprox = QtWidgets.QSlider(self.frame)
         self.TimeApprox.setMaximum(2000)
-        self.TimeApprox.setProperty("value", 300)
+        self.TimeApprox.setPageStep(1)
+        self.TimeApprox.setProperty("value", 500)
         self.TimeApprox.setOrientation(QtCore.Qt.Horizontal)
         self.TimeApprox.setObjectName("TimeApprox")
         self.gridLayout_4.addWidget(self.TimeApprox, 2, 1, 1, 1)
         self.CalibCam = QtWidgets.QSlider(self.frame)
         self.CalibCam.setMaximum(200)
-        self.CalibCam.setPageStep(10)
-        self.CalibCam.setProperty("value", 83)
+        self.CalibCam.setPageStep(1)
+        self.CalibCam.setProperty("value", 80)
         self.CalibCam.setOrientation(QtCore.Qt.Horizontal)
         self.CalibCam.setObjectName("CalibCam")
         self.gridLayout_4.addWidget(self.CalibCam, 0, 1, 1, 1)
@@ -269,6 +280,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.Lab_TimeApprox, 2, 2, 1, 1)
         self.FixedParam = QtWidgets.QSlider(self.frame)
         self.FixedParam.setMaximum(20)
+        self.FixedParam.setPageStep(1)
         self.FixedParam.setProperty("value", 3)
         self.FixedParam.setOrientation(QtCore.Qt.Horizontal)
         self.FixedParam.setObjectName("FixedParam")
@@ -311,6 +323,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.label_7, 3, 0, 1, 1)
         self.CamAngle = QtWidgets.QSlider(self.frame)
         self.CamAngle.setMaximum(180)
+        self.CamAngle.setPageStep(1)
         self.CamAngle.setProperty("value", 90)
         self.CamAngle.setOrientation(QtCore.Qt.Horizontal)
         self.CamAngle.setObjectName("CamAngle")
@@ -329,6 +342,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.lab, 0, 0, 1, 1)
         self.FixedParam_Z = QtWidgets.QSlider(self.frame)
         self.FixedParam_Z.setMaximum(20)
+        self.FixedParam_Z.setPageStep(1)
         self.FixedParam_Z.setProperty("value", 4)
         self.FixedParam_Z.setOrientation(QtCore.Qt.Horizontal)
         self.FixedParam_Z.setObjectName("FixedParam_Z")
@@ -337,6 +351,27 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setColumnStretch(1, 10)
         self.gridLayout_4.setColumnStretch(2, 2)
         self.verticalLayout.addLayout(self.gridLayout_4)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setContentsMargins(-1, 5, -1, 5)
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.label_11 = QtWidgets.QLabel(self.frame)
+        self.label_11.setObjectName("label_11")
+        self.horizontalLayout_3.addWidget(self.label_11)
+        self.Hand_Coords = QtWidgets.QLabel(self.frame)
+        self.Hand_Coords.setStyleSheet("font: 75 14pt \"Calibri\";\n"
+                                       "color: rgb(0, 170, 0);")
+        self.Hand_Coords.setObjectName("Hand_Coords")
+        self.horizontalLayout_3.addWidget(self.Hand_Coords)
+        self.label_13 = QtWidgets.QLabel(self.frame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
+        self.label_13.setSizePolicy(sizePolicy)
+        self.label_13.setText("")
+        self.label_13.setObjectName("label_13")
+        self.horizontalLayout_3.addWidget(self.label_13)
+        self.verticalLayout.addLayout(self.horizontalLayout_3)
         self.label_9 = QtWidgets.QLabel(self.frame)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
@@ -376,30 +411,68 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
-        self.CalibCam.valueChanged['int'].connect(self.Lab_CalibCam.setNum) # type: ignore
+        self.CalibCam.valueChanged['int'].connect(self.Lab_CalibCam.setNum)
         self.CamAngle.valueChanged['int'].connect(self.Lab_CamAngle.setNum)
         self.FixedParam.valueChanged['int'].connect(self.Lab_FixedParam.setNum)
         self.TimeApprox.valueChanged['int'].connect(self.Lab_TimeApprox.setNum)
         self.FixedParam_Z.valueChanged['int'].connect(self.Lab_FixedParam_Z.setNum)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.Lab_CalibCam.setText(str(self.CalibCam.value()))
+        self.Lab_CamAngle.setText(str(self.CamAngle.value()))
+        self.Lab_FixedParam.setText(str(self.FixedParam.value()))
+        self.Lab_TimeApprox.setText(str(self.TimeApprox.value()))
+        self.Lab_FixedParam_Z.setText(str(self.FixedParam_Z.value()))
+
+        self.Start_cam.clicked.connect(self.new_cum)
+
+        self.CalibDist.editingFinished.connect(self.change_cam)
+        self.CalibCam.valueChanged.connect(self.change_cam)
+        self.CamAngle.valueChanged.connect(self.change_cam)
+        self.FixedParam.valueChanged.connect(self.change_cam)
+        self.TimeApprox.valueChanged.connect(self.change_cam)
+        self.FixedParam_Z.valueChanged.connect(self.change_cam)
+
         self.cv_start()
+        self.change_cam()
+
+    def change_cam(self):
+        self.HandTracker.CalibDist = int(self.CalibDist.text())
+        self.HandTracker.CalibCam = int(self.CalibCam.value())
+        self.HandTracker.CamAngle = int(self.CamAngle.value()) * 3.14 / 180
+        self.HandTracker.FixedParam = int(self.FixedParam.value())
+        self.HandTracker.TimeApprox = int(self.TimeApprox.value())
+        self.HandTracker.FixedParam_Z = int(self.FixedParam_Z.value())
 
     def cv_start(self):
-        self.thread = VideoThread()
+        self.thread.set_cam(0)
+        self.HandTracker.width = self.thread.width
+        self.HandTracker.height = self.thread.height
         # connect its signal to the update_image slot
         self.thread.change_pixmap_signal.connect(self.update_image)
         # start the thread
         self.thread.start()
 
+    def new_cum(self):
+        if self.NumCumEditLine.text().isdigit():
+            self.showDialog(self.thread.set_cam(int(self.NumCumEditLine.text())))
+            self.HandTracker.width = self.thread.width
+            self.HandTracker.height = self.thread.height
+        else:
+            self.showDialog("Введите число больше и равное нулю")
+
     def closeEvent(self, event):
         self.thread.stop()
         event.accept()
 
-    def update_image(self, cv_img):
+    def update_image(self, cv_img, coordinate):
         """Updates the image_label with a new opencv image"""
         qt_img = self.convert_cv_qt(cv_img)
         self.Lab_Cam.setPixmap(qt_img)
+        if len(coordinate) > 0:
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(coordinate[0], coordinate[1], coordinate[2], coordinate[3]))
+        else:
+            self.Hand_Coords.setText("No hands")
 
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
@@ -410,14 +483,24 @@ class Ui_MainWindow(object):
         p = convert_to_Qt_format.scaled(self.Lab_Cam.size().width(), self.Lab_Cam.size().height(), Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
+    def showDialog(self, text):
+        if text != "Ok":
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setText(text)
+            msgBox.setWindowTitle("HandTracker")
+            msgBox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+            msgBox.exec()
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "HandTracker"))
         self.label_10.setText(_translate("MainWindow", "Интерфейс управления камерой"))
-        self.Lab_Cam.setText(_translate("MainWindow", "<html><head/><body><p>Камеры нет</p></body></html>"))
-        self.pushButton.setText(_translate("MainWindow", "Обновить"))
+        self.Start_cam.setText(_translate("MainWindow", "Обновить"))
         self.label.setText(_translate("MainWindow", "Номер камеры:"))
+        self.NumCumEditLine.setText(_translate("MainWindow", "0"))
         self.lab_2.setText(_translate("MainWindow", "Дистанция калибровки"))
+        self.CalibDist.setText(_translate("MainWindow", "500"))
         self.label_3.setText(_translate("MainWindow", "мм"))
         self.Lab_TimeApprox.setText(_translate("MainWindow", "0"))
         self.label_8.setText(_translate("MainWindow", "Порог движения Z"))
@@ -429,7 +512,10 @@ class Ui_MainWindow(object):
         self.label_7.setText(_translate("MainWindow", "Порог движения"))
         self.Lab_CalibCam.setText(_translate("MainWindow", "0"))
         self.lab.setText(_translate("MainWindow", "Эквивалент камеры"))
+        self.label_11.setText(_translate("MainWindow", "Координаты руки:"))
+        self.Hand_Coords.setText(_translate("MainWindow", "No hands"))
         self.label_9.setText(_translate("MainWindow", "Интерфейс робота"))
+        self.Lab_Cam.setText(_translate("MainWindow", "<html><head/><body><p>Камеры нет</p></body></html>"))
 
 
 if __name__ == "__main__":

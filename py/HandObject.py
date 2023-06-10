@@ -2,15 +2,15 @@ import numpy as np
 import math
 
 class HandTracker:
-    def __init__(self, height, width):
+    def __init__(self):
         self.SaveSize = None
         self.TrackingProcess = False
 
-        self.height = height
-        self.width = width
+        self.height = 1
+        self.width = 1
         self.Radius = 20
         self.CalibDist = 500
-        self.CalibCam = 0.83
+        self.CalibCam = 83
         self.CamAngle = 90 * 3.14 / 180
 
         self.StartTime = 0
@@ -47,7 +47,6 @@ class HandTracker:
         # Проверка пропажи руки
         if self.TrackingProcess and (time - self.PrevTime) >= self.LostHandTimer*10**9:
             self.TrackingProcess = False
-            print(f"Del: {self.SaveSize}")
         self.PrevTime = time
         # Калибровка размеров руки
         if not self.TrackingProcess:
@@ -70,8 +69,8 @@ class HandTracker:
         # Отслеживание руки
         else:
             self.Real_z = int(self.CalibDist * self.SaveSize // SizeFactor)
-            self.Real_x = self.CalibCam * self.Real_z * Center[0] // (self.CalibDist * PrecisionParam)
-            self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * PrecisionParam)
+            self.Real_x = self.CalibCam * self.Real_z * Center[0] // (self.CalibDist * PrecisionParam * 100)
+            self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * PrecisionParam * 100)
 
             self.approx_z = np.append(self.approx_z, self.Real_z)
             self.approx_t = np.append(self.approx_t, time)
