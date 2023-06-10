@@ -21,8 +21,8 @@ class VideoThread(QThread):
         self.width = 1
         self.cap = cv2.VideoCapture()
 
-    def set_cam(self, num_cum):
-        cap2 = cv2.VideoCapture(num_cum)
+    def set_cam(self, num_Cam):
+        cap2 = cv2.VideoCapture(num_Cam)
         success, image = cap2.read()
         if success:
             self.cap = cap2
@@ -187,16 +187,16 @@ class Ui_MainWindow(object):
         self.label.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.label.setObjectName("label")
         self.gridLayout_3.addWidget(self.label, 0, 0, 1, 1)
-        self.NumCumEditLine = QtWidgets.QLineEdit(self.frame1)
+        self.NumCamEditLine = QtWidgets.QLineEdit(self.frame1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.NumCumEditLine.sizePolicy().hasHeightForWidth())
-        self.NumCumEditLine.setSizePolicy(sizePolicy)
-        self.NumCumEditLine.setMinimumSize(QtCore.QSize(0, 0))
-        self.NumCumEditLine.setBaseSize(QtCore.QSize(100, 0))
-        self.NumCumEditLine.setObjectName("NumCumEditLine")
-        self.gridLayout_3.addWidget(self.NumCumEditLine, 0, 1, 1, 1)
+        sizePolicy.setHeightForWidth(self.NumCamEditLine.sizePolicy().hasHeightForWidth())
+        self.NumCamEditLine.setSizePolicy(sizePolicy)
+        self.NumCamEditLine.setMinimumSize(QtCore.QSize(0, 0))
+        self.NumCamEditLine.setBaseSize(QtCore.QSize(100, 0))
+        self.NumCamEditLine.setObjectName("NumCamEditLine")
+        self.gridLayout_3.addWidget(self.NumCamEditLine, 0, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(self.frame1)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -424,7 +424,7 @@ class Ui_MainWindow(object):
         self.Lab_TimeApprox.setText(str(self.TimeApprox.value()))
         self.Lab_FixedParam_Z.setText(str(self.FixedParam_Z.value()))
 
-        self.Start_cam.clicked.connect(self.new_cum)
+        self.Start_cam.clicked.connect(self.new_Cam)
 
         self.CalibDist.editingFinished.connect(self.change_cam)
         self.CalibCam.valueChanged.connect(self.change_cam)
@@ -453,9 +453,9 @@ class Ui_MainWindow(object):
         # start the thread
         self.thread.start()
 
-    def new_cum(self):
-        if self.NumCumEditLine.text().isdigit():
-            self.showDialog(self.thread.set_cam(int(self.NumCumEditLine.text())))
+    def new_Cam(self):
+        if self.NumCamEditLine.text().isdigit():
+            self.showDialog(self.thread.set_cam(int(self.NumCamEditLine.text())))
             self.HandTracker.width = self.thread.width
             self.HandTracker.height = self.thread.height
         else:
@@ -498,7 +498,7 @@ class Ui_MainWindow(object):
         self.label_10.setText(_translate("MainWindow", "Интерфейс управления камерой"))
         self.Start_cam.setText(_translate("MainWindow", "Обновить"))
         self.label.setText(_translate("MainWindow", "Номер камеры:"))
-        self.NumCumEditLine.setText(_translate("MainWindow", "0"))
+        self.NumCamEditLine.setText(_translate("MainWindow", "0"))
         self.lab_2.setText(_translate("MainWindow", "Дистанция калибровки"))
         self.CalibDist.setText(_translate("MainWindow", "500"))
         self.label_3.setText(_translate("MainWindow", "мм"))
