@@ -37,7 +37,7 @@ class VideoThread(QThread):
 
         prev_time = 0
         # ДОДЕЛАТЬ
-        PrecisionParam = 2  # Устрание связи зависимости точности от разрешения камеры
+        PrecisionParam = 4  # Устрание связи зависимости точности от разрешения камеры
 
         with mp_hands.Hands(
                 model_complexity=1,
@@ -123,7 +123,6 @@ class Ui_MainWindow(object):
     def __init__(self):
         self.thread = VideoThread()
         self.HandTracker = Ho.HandTracker()
-        self.Robot_mes_coords = ""
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -480,7 +479,7 @@ class Ui_MainWindow(object):
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.Lab_Cam.size().width(), self.Lab_Cam.size().height(), Qt.KeepAspectRatio)
+        p = convert_to_Qt_format.scaled(MainWindow.size().width()//2, MainWindow.size().height(), Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
     def showDialog(self, text):
