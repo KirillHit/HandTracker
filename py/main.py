@@ -126,6 +126,7 @@ class Ui_MainWindow(object):
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        MainWindow.setEnabled(True)
         MainWindow.resize(1200, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -395,6 +396,12 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.horizontalFrame)
         self.horizontalLayout_5.addWidget(self.frame)
         self.Lab_Cam = QtWidgets.QLabel(self.verticalFrame)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.Lab_Cam.sizePolicy().hasHeightForWidth())
+        self.Lab_Cam.setSizePolicy(sizePolicy)
+        self.Lab_Cam.setMinimumSize(QtCore.QSize(0, 0))
         self.Lab_Cam.setAutoFillBackground(False)
         self.Lab_Cam.setStyleSheet("font: 75 14pt \"Calibri\";")
         self.Lab_Cam.setFrameShape(QtWidgets.QFrame.NoFrame)
@@ -402,7 +409,7 @@ class Ui_MainWindow(object):
         self.Lab_Cam.setObjectName("Lab_Cam")
         self.horizontalLayout_5.addWidget(self.Lab_Cam)
         self.horizontalLayout_5.setStretch(0, 10)
-        self.horizontalLayout_5.setStretch(1, 15)
+        self.horizontalLayout_5.setStretch(1, 18)
         self.verticalLayout_4.addLayout(self.horizontalLayout_5)
         self.verticalLayout_4.setStretch(0, 1)
         self.verticalLayout_4.setStretch(1, 10)
@@ -479,7 +486,7 @@ class Ui_MainWindow(object):
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(MainWindow.size().width()//2, MainWindow.size().height(), Qt.KeepAspectRatio)
+        p = convert_to_Qt_format.scaled(MainWindow.size().width()*62//100, MainWindow.size().height(), Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
     def showDialog(self, text):
