@@ -18,7 +18,7 @@ class HandTracker:
         self.CalibTimer = 1
         self.LostHandTimer = 2
 
-        self.TimeApprox = 300 # В миллисекундах
+        self.TimeApprox = 500 # В миллисекундах
         self.LenApprox = 60 * self.TimeApprox // 1000
         self.approx_x = np.zeros(self.LenApprox, dtype=np.int16)
         self.approx_y = np.zeros(self.LenApprox, dtype=np.int16)
@@ -82,7 +82,7 @@ class HandTracker:
             self.approx_x = self.approx_x[-self.LenApprox:]
             self.approx_y = self.approx_y[-self.LenApprox:]
 
-            for i, time in enumerate(reversed(self.approx_t)):
+            for i, time in enumerate(reversed(self.approx_t[1:])):
                 if (self.approx_t[-1] - time) >= self.TimeApprox * (10 ** 6):
                     break
 

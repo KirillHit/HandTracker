@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QColor
+from PyQt5.QtGui import QPixmap
 import cv2
 import numpy as np
 import sys
@@ -12,14 +12,15 @@ from PyQt5.QtWidgets import QMessageBox
 #pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
 
 class VideoThread(QThread):
-    change_pixmap_signal = pyqtSignal(np.ndarray, list)
+    change_pixmap_signal = pyqtSignal(np.ndarray)
+    Cam_error_signal = pyqtSignal(int)
+    Hand_find = pyqtSignal(tuple, int, int, bool)
 
     def __init__(self):
         super().__init__()
         self._run_flag = True
-        self.height = 1
-        self.width = 1
         self.cap = cv2.VideoCapture()
+        self.num_Cam = 0
 
         self.mp_drawing = mp.solutions.drawing_utils
         self.mp_hands = mp.solutions.hands
@@ -29,34 +30,30 @@ class VideoThread(QThread):
         self.PrecisionParam = 4
 
     def set_cam(self, num_Cam):
-        self._run_flag = False
-        self.wait()
-        self.cap.release()
-        self.cap = cv2.VideoCapture(num_Cam)
+        self.stop()
+        self.num_Cam = num_Cam
+        self.cap = cv2.VideoCapture(self.num_Cam)
         success, image = self.cap.read()
         if success:
             self.height, self.width = image.shape[:2]
             self._run_flag = True
             self.start()
-        return success
+        else:
+            self.Cam_error_signal.emit(self.num_Cam)
 
     def run(self):
-        with self.mp_hands.Hands(
-                model_complexity=1,
-                max_num_hands=1,
-                min_detection_confidence=0.5,
-                min_tracking_confidence=0.5) as hands:
+        with self.mp_hands.Hands( model_complexity=1, max_num_hands=1,
+                                  min_detection_confidence=0.5, min_tracking_confidence=0.5) as hands:
             while self._run_flag:
                 success, image = self.cap.read()
                 if not success:
-                    continue
+                    self.Cam_error_signal.emit(self.num_Cam)
+                    self.stop()
+                    break
 
                 image = cv2.flip(image, 1)
 
                 results = hands.process(image)
-
-                mes = []
-
                 if results.multi_hand_landmarks:
                     for hand_landmarks in results.multi_hand_landmarks:
                         self.mp_drawing.draw_landmarks(image, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
@@ -90,7 +87,7 @@ class VideoThread(QThread):
                         m = all_t[:, 1:].copy()
                         for i in range(2):
                             m[i] = m[i] - all_t[:, 0][i]
-                        SizeFactor = sum(np.sqrt(sum(np.power(m[:, i], 2) for i in range(4)))) // 4
+                        SizeFactor = int(sum(np.sqrt(sum(np.power(m[:, i], 2) for i in range(4)))) // 4)
                         # Для точек 1-2, 2-3, 3-4
                         '''
                         m = np.array([[all_t[:, v][i]-all_t[:, v-1][i] for v in reversed(range(2, 5))] for i in range(3)])
@@ -103,22 +100,27 @@ class VideoThread(QThread):
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 1)
                         cv2.putText(image, f"Norm: {Norm}", (5, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 255), 1)
 
-                        mes = [(Center_x - self.width * self.PrecisionParam // 2,
-                                Center_y - self.height * self.PrecisionParam // 2),
-                                time.time_ns(), SizeFactor, self.PrecisionParam]
+                        if self._run_flag:
+                            self.Hand_find.emit((Center_x - self.width * self.PrecisionParam // 2,
+                                                Center_y - self.height * self.PrecisionParam // 2),
+                                                SizeFactor, self.PrecisionParam, True)
+                else:
+                    self.Hand_find.emit((0,0), 0, 0, False)
 
                 cur_time = time.time_ns()
                 fps = 10 ** 9 // (cur_time - self.prev_time)
                 self.prev_time = cur_time
                 cv2.putText(image, f"FPS: {str(fps)}", (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
                 cv2.circle(image, (self.width // 2, self.height // 2), 20, (0, 255, 0), 1)
-                if self._run_flag:
-                    self.change_pixmap_signal.emit(image, mes)
 
+                if self._run_flag:
+                    self.change_pixmap_signal.emit(image)
+                    
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
         self._run_flag = False
         self.wait()
+        self.cap.release()
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -442,7 +444,6 @@ class Ui_MainWindow(object):
 
         # Позволяет изображению деформироваться
         #self.Lab_Cam.setScaledContents(True)
-
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
@@ -474,6 +475,8 @@ class Ui_MainWindow(object):
 
         # connect its signal to the update_image slot
         self.CameraThread.change_pixmap_signal.connect(self.update_image)
+        self.CameraThread.Cam_error_signal.connect(self.Cam_error)
+        self.CameraThread.Hand_find.connect(self.Hand_update)
 
         # Попытка подключится к камере по умолчанию
         self.new_Cam()
@@ -482,12 +485,7 @@ class Ui_MainWindow(object):
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
-            if not self.CameraThread.set_cam(int(self.NumCamEditLine.text())):
-                self.Lab_Cam.clear()
-                self.Lab_Cam.setText("Камера не найдена")
-                self.showDialog("Камера не найдена.\n"
-                                "Всем подключённым камерам присваиваются номера от нуля и далее по возрастанию. \n"
-                                "0 - по умолчанию веб-камера.")
+            self.CameraThread.set_cam(int(self.NumCamEditLine.text()))
             self.HandTracker.width = self.CameraThread.width
             self.HandTracker.height = self.CameraThread.height
         else:
@@ -499,20 +497,30 @@ class Ui_MainWindow(object):
         self.HandTracker.CamAngle = (int(self.CamAngle.value()) * 3.14) // 180
         self.HandTracker.FixedParam = int(self.FixedParam.value())
         self.HandTracker.TimeApprox = int(self.TimeApprox.value())
+        self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000
         self.HandTracker.FixedParam_Z = int(self.FixedParam_Z.value())
 
     def closeEvent(self, event):
         self.CameraThread.stop()
         event.accept()
 
-    def update_image(self, cv_img, coordinate):
+    def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
-        qt_img = self.convert_cv_qt(cv_img)
-        self.Lab_Cam.setPixmap(qt_img)
-        if len(coordinate) > 0:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand(coordinate[0], coordinate[1], coordinate[2], coordinate[3]))
+        self.Lab_Cam.setPixmap(self.convert_cv_qt(cv_img))
+
+    def Hand_update(self, Cordinate, SizeFactor, PrecisionParam, HandExist):
+        if HandExist:
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, time.time_ns(), SizeFactor, PrecisionParam))
         else:
-            self.Hand_Coords.setText("No hands")
+            if self.Hand_Coords.text() != "No hand":
+                self.Hand_Coords.setText("No hand")
+
+    def Cam_error(self, Current_cam):
+        self.Lab_Cam.setText(f"Камера {Current_cam} не найдена")
+        self.Hand_Coords.setText("No hand")
+        self.showDialog("Камера не найдена.\n"
+                        "Всем подключённым камерам присваиваются номера от нуля и далее по возрастанию. \n"
+                        "0 - по умолчанию веб-камера.")
 
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
