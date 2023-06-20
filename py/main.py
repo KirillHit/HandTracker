@@ -112,7 +112,8 @@ class VideoThread(QThread):
                 self.prev_time = cur_time
                 cv2.putText(image, f"FPS: {str(fps)}", (5, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 1)
                 cv2.circle(image, (self.width // 2, self.height // 2), 20, (0, 255, 0), 1)
-                self.change_pixmap_signal.emit(image, mes)
+                if self._run_flag:
+                    self.change_pixmap_signal.emit(image, mes)
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
@@ -123,7 +124,6 @@ class Ui_MainWindow(object):
     def __init__(self):
         self.CameraThread = VideoThread()
         self.HandTracker = Ho.HandTracker()
-        self.Track_Now = True
 
     def setupUi(self, MainWindow):
         # Код окна из PQ дизайнера
@@ -483,14 +483,11 @@ class Ui_MainWindow(object):
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
             if not self.CameraThread.set_cam(int(self.NumCamEditLine.text())):
-                self.Track_Now = False
                 self.Lab_Cam.clear()
                 self.Lab_Cam.setText("Камера не найдена")
                 self.showDialog("Камера не найдена.\n"
                                 "Всем подключённым камерам присваиваются номера от нуля и далее по возрастанию. \n"
                                 "0 - по умолчанию веб-камера.")
-            else:
-                self.Track_Now = True
             self.HandTracker.width = self.CameraThread.width
             self.HandTracker.height = self.CameraThread.height
         else:
@@ -510,13 +507,12 @@ class Ui_MainWindow(object):
 
     def update_image(self, cv_img, coordinate):
         """Updates the image_label with a new opencv image"""
-        if self.Track_Now:
-            qt_img = self.convert_cv_qt(cv_img)
-            self.Lab_Cam.setPixmap(qt_img)
-            if len(coordinate) > 0:
-                self.Hand_Coords.setText(self.HandTracker.give_Hand(coordinate[0], coordinate[1], coordinate[2], coordinate[3]))
-            else:
-                self.Hand_Coords.setText("No hands")
+        qt_img = self.convert_cv_qt(cv_img)
+        self.Lab_Cam.setPixmap(qt_img)
+        if len(coordinate) > 0:
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(coordinate[0], coordinate[1], coordinate[2], coordinate[3]))
+        else:
+            self.Hand_Coords.setText("No hands")
 
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
