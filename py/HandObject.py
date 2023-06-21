@@ -1,10 +1,13 @@
 import numpy as np
 import math
+import time
+import sys
 
 class HandTracker:
     def __init__(self):
         self.SaveSize = None
         self.TrackingProcess = False
+        self.Hand = "None"
 
         self.height = 1
         self.width = 1
@@ -43,20 +46,21 @@ class HandTracker:
         return int(self.mapping(time, a, b, c))
     '''
 
-    def give_Hand (self, Center, time, SizeFactor, PrecisionParam):
+    def give_Hand (self, Center, SizeFactor, PrecisionParam):
+        Now = time.time_ns()
         # Проверка пропажи руки
-        if self.TrackingProcess and (time - self.PrevTime) >= self.LostHandTimer*10**9:
+        if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer*10**9:
             self.TrackingProcess = False
-        self.PrevTime = time
+        self.PrevTime = Now
         # Калибровка размеров руки
         if not self.TrackingProcess:
             if (Center[0]**2 + Center[1]**2) <= (self.Radius*PrecisionParam)**2:
                 if self.StartTime == 0:
-                    self.StartTime = time
+                    self.StartTime = Now
                     self.SaveSize = np.array([SizeFactor])
                 else:
                     self.SaveSize = np.append(self.SaveSize, SizeFactor)
-                    if (time - self.StartTime) >= self.CalibTimer*10**9:
+                    if (Now - self.StartTime) >= self.CalibTimer*10**9:
                         self.TrackingProcess = True
                         self.SaveSize = sum(self.SaveSize)//len(self.SaveSize)
                         self.approx_x = np.zeros(self.LenApprox, dtype=np.int16)
@@ -73,7 +77,7 @@ class HandTracker:
             self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * PrecisionParam * 100)
 
             self.approx_z = np.append(self.approx_z, self.Real_z)
-            self.approx_t = np.append(self.approx_t, time)
+            self.approx_t = np.append(self.approx_t, Now)
             self.approx_x = np.append(self.approx_x, self.Real_x)
             self.approx_y = np.append(self.approx_y, self.Real_y)
 
@@ -82,8 +86,8 @@ class HandTracker:
             self.approx_x = self.approx_x[-self.LenApprox:]
             self.approx_y = self.approx_y[-self.LenApprox:]
 
-            for i, time in enumerate(reversed(self.approx_t[1:])):
-                if (self.approx_t[-1] - time) >= self.TimeApprox * (10 ** 6):
+            for i, Now in enumerate(reversed(self.approx_t[1:])):
+                if (self.approx_t[-1] - Now) >= self.TimeApprox * (10 ** 6):
                     break
 
             self.Real_z = sum(self.approx_z[-i-1:])//(i+1)
@@ -100,6 +104,7 @@ class HandTracker:
             y = -int(self.Fixed_y * math.cos(self.CamAngle) - self.Fixed_z * math.sin(self.CamAngle))
             z = -int(self.Fixed_y * math.sin(self.CamAngle) + self.Fixed_z * math.cos(self.CamAngle))
 
-            return f"X:{self.Fixed_x}, Y:{y}, Z:{z}"
+            self.Hand = f"X:{self.Fixed_x}, Y:{y}, Z:{z}"
+            return self.Hand
 
 

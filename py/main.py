@@ -6,7 +6,8 @@ import numpy as np
 import sys
 import mediapipe as mp
 import time
-import HandObject as Ho
+import HandObject
+import RobotControl
 from PyQt5.QtWidgets import QMessageBox
 
 #pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
@@ -125,7 +126,8 @@ class VideoThread(QThread):
 class Ui_MainWindow(object):
     def __init__(self):
         self.CameraThread = VideoThread()
-        self.HandTracker = Ho.HandTracker()
+        self.RobotThread = RobotControl.RobotObject()
+        self.HandTracker = HandObject.HandTracker()
 
     def setupUi(self, MainWindow):
         # Код окна из PQ дизайнера
@@ -477,11 +479,17 @@ class Ui_MainWindow(object):
         self.CameraThread.change_pixmap_signal.connect(self.update_image)
         self.CameraThread.Cam_error_signal.connect(self.Cam_error)
         self.CameraThread.Hand_find.connect(self.Hand_update)
+        self.RobotThread.GetHand.connect(self.HandToRobot)
 
         # Попытка подключится к камере по умолчанию
         self.new_Cam()
         # Обновление данных класса HandTracker
         self.change_cam()
+
+        self.RobotThread.start()
+
+    def HandToRobot(self):
+        self.RobotThread.SetHand(self.HandTracker.Hand)
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
@@ -510,7 +518,7 @@ class Ui_MainWindow(object):
 
     def Hand_update(self, Cordinate, SizeFactor, PrecisionParam, HandExist):
         if HandExist:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, time.time_ns(), SizeFactor, PrecisionParam))
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, PrecisionParam))
         else:
             if self.Hand_Coords.text() != "No hand":
                 self.Hand_Coords.setText("No hand")
