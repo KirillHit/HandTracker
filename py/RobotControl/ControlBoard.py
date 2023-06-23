@@ -76,6 +76,8 @@ class Ui_MainWindow(object):
 
         self.RobotThread.GetHand.connect(self.HandToRobot)
 
+        self.RobotThread.start()
+
     def Change_hand(self):
         self.Hand = [self.Slide_1.value(), self.Slide_2.value(), self.Slide_3.value(),
                      self.Slide_4.value(), self.Slide_5.value(), self.Slide_6.value()]
