@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QIcon
 import cv2
 import numpy as np
 import sys
@@ -444,12 +444,15 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         # endregion
 
+        # Самая важная строчка
+        MainWindow.setWindowIcon(QIcon("icon.jpg"))
+
         # Позволяет изображению деформироваться
-        #self.Lab_Cam.setScaledContents(True)
+        # self.Lab_Cam.setScaledContents(True)
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
-        #Настройка полей и ползунков
+        # Настройка полей и ползунков
         # region
         self.retranslateUi(MainWindow)
         self.CalibCam.valueChanged['int'].connect(self.Lab_CalibCam.setNum)
