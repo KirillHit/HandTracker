@@ -48,4 +48,4 @@ x64/
 *.user
 *.filters
 mediapipe/
-ros_resourc/
+ros_resources/
