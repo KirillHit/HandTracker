@@ -1,13 +1,12 @@
-# Python 2/3 compatibility imports
-from __future__ import print_function
-from six.moves import input
-
+import math
 from PyQt5.QtCore import QThread, pyqtSignal
 
 import rospy
-from moveit_commander import MoveGroupCommander
+import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+
+from khi_robot_msgs.srv import *
 
 service = '/khi_robot_command_service'
 planner = 'RRTConnectkConfigDefault'
@@ -18,7 +17,7 @@ class RobotObject(QThread):
     def __init__(self):
         super().__init__()
         self._run_flag = True
-        self.Hand = [0, 0, 0, 0, 0, 0]
+        self.Hand = [0,0,0,0,0,0]
 
         rospy.init_node('message', anonymous=True)
 
@@ -46,13 +45,23 @@ class RobotObject(QThread):
 
         # mgc setting
         self.mgc.set_planner_id(planner)
-        self.mgc.set_goal_joint_tolerance(accuracy_jt)
+        self.mgc.set_goal_joint_tolerance(self.accuracy_jt)
         # mgc.set_goal_position_tolerance(accuracy_pos)
         # mgc.set_goal_orientation_tolerance(accuracy_ori)
+
+        self.mgc.set_max_velocity_scaling_factor(self.min_vel)
+        self.mgc.set_max_acceleration_scaling_factor(self.min_acc)
+        self.mgc.set_max_velocity_scaling_factor(self.max_vel)
+        self.mgc.set_max_acceleration_scaling_factor(self.max_acc)
         # endregion
 
+        ret = get_driver_state()
+        if ret.cmd_ret == 'ERROR':
+            cmdhandler_client('driver', 'restart')
+            rospy.sleep(3)
+
         # Частота передачи
-        self.frequency = 1
+        self.frequency = 2
         self.rate = rospy.Rate(self.frequency)
 
         rospy.loginfo("Init successful")
@@ -63,17 +72,20 @@ class RobotObject(QThread):
             self.GetHand.emit()
 
             pose_goal = geometry_msgs.msg.Pose()
-            pose_goal.orientation.w = self.Hand[3]
             pose_goal.position.x = self.Hand[0]
             pose_goal.position.y = self.Hand[1]
             pose_goal.position.z = self.Hand[2]
-            self.mgc.set_pose_target(pose_goal)
+            pose_goal.orientation.x = self.Hand[3]
+            pose_goal.orientation.y = self.Hand[4]
+            pose_goal.orientation.z = self.Hand[5]
 
-            self.mgc.set_max_velocity_scaling_factor(self.exec_vel)
-            self.mgc.set_joint_value_target(self.Hand)
-            self.mgc.go()
+            self.mgc.set_pose_target(pose_goal)
+            print(pose_goal)
+            self.mgc.go(wait=True)
+            self.mgc.clear_pose_targets()
             rospy.loginfo("joint1 end")
             self.rate.sleep()
+
 
     def SetHand(self, Hand):
         self.Hand = Hand

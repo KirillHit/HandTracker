@@ -29,8 +29,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.Slide_1 = QtWidgets.QSlider(self.centralwidget)
-        self.Slide_1.setMinimum(-200)
-        self.Slide_1.setMaximum(200)
+        self.Slide_1.setMinimum(-400)
+        self.Slide_1.setMaximum(400)
         self.Slide_1.setPageStep(1)
         self.Slide_1.setOrientation(QtCore.Qt.Horizontal)
         self.Slide_1.setObjectName("Slide_1")
@@ -83,6 +83,15 @@ class Ui_MainWindow(object):
         self.Slide_4.valueChanged.connect(self.Change_hand)
         self.Slide_5.valueChanged.connect(self.Change_hand)
         self.Slide_6.valueChanged.connect(self.Change_hand)
+
+        self.Slide_1.setValue(40)
+        self.Slide_2.setValue(10)
+        self.Slide_3.setValue(40)
+        self.Slide_4.setValue(0)
+        self.Slide_5.setValue(0)
+        self.Slide_6.setValue(100)
+
+        self.HandToRobot()
 
         self.Change_hand()
 
