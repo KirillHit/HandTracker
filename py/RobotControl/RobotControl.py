@@ -13,19 +13,22 @@ class RobotObject(QThread):
         self._run_flag = True
         self.Hand = [0,0,0,0,0,0]
 
-    def run(self):
         rospy.init_node('message', anonymous=True)
-        group = MoveGroupCommander("manipulator")
-        exec_vel = 0.5
+        self.group = MoveGroupCommander("manipulator")
+        self.exec_vel = 0.5
+        rospy.loginfo("start")
+        self.rate = rospy.Rate(1)
 
+    def run(self):
         while self._run_flag and not rospy.is_shutdown():
+            self.GetHand.emit()
             rospy.loginfo("joint1 start")
-            group.set_max_velocity_scaling_factor(exec_vel)
-            group.set_joint_value_target(self.Hand)
-            group.go()
+            self.group.set_max_velocity_scaling_factor(self.exec_vel)
+            self.group.set_joint_value_target(self.Hand)
+            print(self.Hand)
+            self.group.go()
             rospy.loginfo("joint1 end")
-
-
+            self.rate.sleep()
 
         #self.GetHand.emit()
 

@@ -79,8 +79,8 @@ class Ui_MainWindow(object):
         self.RobotThread.start()
 
     def Change_hand(self):
-        self.Hand = [self.Slide_1.value(), self.Slide_2.value(), self.Slide_3.value(),
-                     self.Slide_4.value(), self.Slide_5.value(), self.Slide_6.value()]
+        self.Hand = [self.Slide_1.value()/100, self.Slide_2.value()/100, self.Slide_3.value()/100,
+                     self.Slide_4.value()/100, self.Slide_5.value()/100, self.Slide_6.value()/100]
 
     def HandToRobot(self):
         self.RobotThread.SetHand(self.Hand)
