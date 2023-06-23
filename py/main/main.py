@@ -10,7 +10,7 @@ import HandObject
 import RobotControl
 from PyQt5.QtWidgets import QMessageBox
 
-#pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
+# pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
 
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)

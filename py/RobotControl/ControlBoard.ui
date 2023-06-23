@@ -47,8 +47,14 @@
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
          <widget class="QSlider" name="Slide_1">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -57,8 +63,14 @@
         </item>
         <item>
          <widget class="QSlider" name="Slide_2">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -67,8 +79,14 @@
         </item>
         <item>
          <widget class="QSlider" name="Slide_3">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -77,8 +95,14 @@
         </item>
         <item>
          <widget class="QSlider" name="Slide_4">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -87,8 +111,14 @@
         </item>
         <item>
          <widget class="QSlider" name="Slide_5">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
+          </property>
+          <property name="pageStep">
+           <number>1</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
@@ -97,8 +127,11 @@
         </item>
         <item>
          <widget class="QSlider" name="Slide_6">
+          <property name="minimum">
+           <number>-200</number>
+          </property>
           <property name="maximum">
-           <number>180</number>
+           <number>200</number>
           </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>

@@ -11,18 +11,14 @@ import geometry_msgs.msg
 from khi_robot_msgs.srv import *
 from rospkg import RosPack, ResourceNotFound
 
-if rospy.has_param('/test_group_name'):
-    gn = '/' + rospy.get_param('/test_group_name')
-else:
-    gn = ''
-service = gn+'/khi_robot_command_service'
+service = '/khi_robot_command_service'
 planner = 'RRTConnectkConfigDefault'
 
 class KhiRobot:
     arm_name = ''
     arm_num = 1
     max_jt = 6
-    group = gn+'/manipulator'
+    group = '/manipulator'
     min_pos_list = []
     max_pos_list = []
     max_vel_list = []
@@ -34,8 +30,8 @@ class KhiRobot:
         self.max_pos_list = []
         self.max_vel_list = []
         self.max_acc_list = []
-        self.arm_name = rospy.get_param(gn+'/khi_robot_param/robot')
-        limits = rospy.get_param(gn+'/'+self.arm_name+'/joint_limits')
+        self.arm_name = rospy.get_param('/khi_robot_param/robot') # RS007L
+        limits = rospy.get_param('/'+self.arm_name+'/joint_limits')
         self.arm_num = 1
         self.max_jt = 6
         self.group = 'manipulator'
@@ -45,20 +41,6 @@ class KhiRobot:
             self.max_pos_list.append(limits['joint'+str(jt+1)]['max_position'])
             self.max_vel_list.append(limits['joint'+str(jt+1)]['max_velocity'])
             self.max_acc_list.append(limits['joint'+str(jt+1)]['max_acceleration'])
-
-    def get_pos_list(self, ano, jt, type):
-        jt_list = copy.deepcopy(self.base_pos_list)
-        if type == 'min':
-            if jt+1 == 2:
-                jt_list[2] = -130*math.pi/180
-                jt_list[0] = -135*math.pi/180
-            jt_list[jt] = self.min_pos_list[jt]
-        else:
-            if jt+1 == 2:
-                jt_list[2] = 130*math.pi/180
-                jt_list[0] = -135*math.pi/180
-            jt_list[jt] = self.max_pos_list[jt]
-        return jt_list
 
 def cmdhandler_client(type_arg , cmd_arg):
     rospy.wait_for_service(service)
