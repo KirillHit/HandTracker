@@ -7,7 +7,7 @@ class HandTracker:
     def __init__(self):
         self.SaveSize = None
         self.TrackingProcess = False
-        self.Hand = "None"
+        self.Hand = [0,0,0]
 
         self.height = 1
         self.width = 1
@@ -104,7 +104,7 @@ class HandTracker:
             y = -int(self.Fixed_y * math.cos(self.CamAngle) - self.Fixed_z * math.sin(self.CamAngle))
             z = -int(self.Fixed_y * math.sin(self.CamAngle) + self.Fixed_z * math.cos(self.CamAngle))
 
-            self.Hand = f"X:{self.Fixed_x}, Y:{y}, Z:{z}"
-            return self.Hand
+            self.Hand = [self.Fixed_x, y, z]
+            return f"X:{self.Fixed_x}, Y:{y}, Z:{z}"
 
 

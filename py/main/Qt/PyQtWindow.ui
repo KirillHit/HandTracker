@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>600</height>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -40,7 +40,7 @@
         <number>5</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="10,18">
+        <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="1,2">
          <item>
           <widget class="QFrame" name="frame">
            <property name="frameShape">
@@ -261,6 +261,13 @@
              </widget>
             </item>
             <item>
+             <widget class="Line" name="line">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QGridLayout" name="gridLayout_4" columnstretch="1,10,2">
               <property name="topMargin">
                <number>7</number>
@@ -478,6 +485,13 @@
              </layout>
             </item>
             <item>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <property name="topMargin">
                <number>5</number>
@@ -547,11 +561,220 @@ color: rgb(0, 170, 0);</string>
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <item>
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Модель робота:</string>
+                </property>
+                <property name="margin">
+                 <number>5</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="ModelRobot">
+                <item>
+                 <property name="text">
+                  <string>rs007l</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>rs007n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>rs013n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>rs020n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>rs025n</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>rs080n</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Симуляция:</string>
+                </property>
+                <property name="margin">
+                 <number>5</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="SimulationCheckBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="tristate">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <widget class="QLabel" name="label_12">
                 <property name="text">
-                 <string>TextLabel</string>
+                 <string>IP адрес робота:</string>
+                </property>
+                <property name="margin">
+                 <number>5</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="IpLineEdit">
+                <property name="minimumSize">
+                 <size>
+                  <width>140</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>140</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <stylestrategy>PreferDefault</stylestrategy>
+                 </font>
+                </property>
+                <property name="inputMethodHints">
+                 <set>Qt::ImhNone</set>
+                </property>
+                <property name="text">
+                 <string>196.001.1.1</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_14">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QPushButton" name="ConnectBut">
+                <property name="minimumSize">
+                 <size>
+                  <width>140</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Подключиться</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_21">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QPushButton" name="StartRobotBut">
+                <property name="text">
+                 <string>Начать управление</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="PauseRobotBut">
+                <property name="text">
+                 <string>Остановить</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_19">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -560,12 +783,28 @@ color: rgb(0, 170, 0);</string>
             <item>
              <widget class="QFrame" name="horizontalFrame">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout"/>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -631,6 +870,9 @@ color: rgb(0, 170, 0);</string>
            <property name="styleSheet">
             <string notr="true">font: 75 14pt &quot;Calibri&quot;</string>
            </property>
+           <property name="inputMethodHints">
+            <set>Qt::ImhNone</set>
+           </property>
            <property name="frameShape">
             <enum>QFrame::Panel</enum>
            </property>
@@ -662,18 +904,18 @@ color: rgb(0, 170, 0);</string>
  <resources/>
  <connections>
   <connection>
-   <sender>CalibCam</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>Lab_CalibCam</receiver>
-   <slot>setNum(int)</slot>
+   <sender>SimulationCheckBox</sender>
+   <signal>stateChanged(int)</signal>
+   <receiver>IpLineEdit</receiver>
+   <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>266</x>
-     <y>178</y>
+     <x>256</x>
+     <y>456</y>
     </hint>
     <hint type="destinationlabel">
-     <x>386</x>
-     <y>178</y>
+     <x>222</x>
+     <y>489</y>
     </hint>
    </hints>
   </connection>
