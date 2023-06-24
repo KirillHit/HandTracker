@@ -616,7 +616,7 @@ class Ui_MainWindow(object):
         self.change_cam()
 
     def RobotConnect(self):
-        self.RobotThread.RobotConnect(self.ModelRobot.currentText(), self.SimulationCheckBox.isChecked())
+        self.RobotThread.RobotConnect(self.ModelRobot.currentText(), self.SimulationCheckBox.isChecked(), self.IpLineEdit.text())
 
     def HandToRobot(self):
         self.RobotThread.SetHand(self.HandTracker.Hand)

@@ -87,9 +87,9 @@ class Ui_MainWindow(object):
         self.Slide_1.setValue(40)
         self.Slide_2.setValue(10)
         self.Slide_3.setValue(40)
-        self.Slide_4.setValue(0)
+        self.Slide_4.setValue(100)
         self.Slide_5.setValue(0)
-        self.Slide_6.setValue(100)
+        self.Slide_6.setValue(0)
 
         self.HandToRobot()
 

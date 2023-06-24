@@ -61,7 +61,7 @@ class RobotObject(QThread):
             rospy.sleep(3)
 
         # Частота передачи
-        self.frequency = 2
+        self.frequency = 30
         self.rate = rospy.Rate(self.frequency)
 
         rospy.loginfo("Init successful")
@@ -78,6 +78,7 @@ class RobotObject(QThread):
             pose_goal.orientation.x = self.Hand[3]
             pose_goal.orientation.y = self.Hand[4]
             pose_goal.orientation.z = self.Hand[5]
+            pose_goal.orientation.w = self.Hand[5]
 
             self.mgc.set_pose_target(pose_goal)
             print(pose_goal)

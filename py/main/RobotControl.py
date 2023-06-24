@@ -1,12 +1,17 @@
 import math
 from PyQt5.QtCore import QThread, pyqtSignal
 
-import rospy
-import moveit_commander
-import geometry_msgs.msg
 import os
 
+os.system("gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+          "roscore; exec bash\"'")
+
+QThread.sleep(5)
+
+import rospy
+import geometry_msgs.msg
 from khi_robot_msgs.srv import *
+import moveit_commander
 
 service = '/khi_robot_command_service'
 planner = 'RRTConnectkConfigDefault'
@@ -33,6 +38,25 @@ class RobotObject(QThread):
         self.min_acc = 0.5  # min acceleration scale
         # endregion
 
+        # Частота передачи
+        self.frequency = 2
+        self.rate = rospy.Rate(self.frequency)
+
+        rospy.loginfo("Init successful")
+
+    def RobotConnect(self, RobotModel, SimulationFlag, RobotIp="192.168.0.2"):
+        if SimulationFlag:
+            os.system(
+                "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true; exec bash\"'")
+        else:
+            os.system(
+                "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}; exec bash\"'")
+        self.sleep(5)
+        os.system(f"gnome-terminal -e 'bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch; exec bash\"'")
+        self.sleep(5)
+
         ######################################### set range of move #####################################################
         # region
         self.khi_robot = KhiRobot()
@@ -55,21 +79,6 @@ class RobotObject(QThread):
         self.mgc.set_max_acceleration_scaling_factor(self.max_acc)
         # endregion
 
-        # Частота передачи
-        self.frequency = 2
-        self.rate = rospy.Rate(self.frequency)
-
-        rospy.loginfo("Init successful")
-
-    def RobotConnect(self, RobotModel, SimulationFlag):
-        os.system("source /ros_resources/devel/setup.bash")
-        if SimulationFlag:
-            os.system(f"start cmd /c roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true")
-        else:
-            os.system(f"start cmd /c roslaunch khi_robot_bringup {RobotModel}_bringup.launch")
-        os.system(f"start cmd /c roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch")
-        self.sleep(10)
-
     def RobotStart(self):
         if not self._run_flag:
             self._run_flag = True
@@ -90,9 +99,9 @@ class RobotObject(QThread):
             self.GetHand.emit()
 
             pose_goal = geometry_msgs.msg.Pose()
-            pose_goal.position.x = self.Hand[0]
-            pose_goal.position.y = self.Hand[1]
-            pose_goal.position.z = self.Hand[2]
+            pose_goal.position.x = self.Hand[0]/100
+            pose_goal.position.y = self.Hand[1]/100
+            pose_goal.position.z = self.Hand[2]/100
             '''
             pose_goal.orientation.x = self.Hand[3]
             pose_goal.orientation.y = self.Hand[4]
