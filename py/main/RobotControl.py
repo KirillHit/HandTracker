@@ -10,6 +10,7 @@ QThread.sleep(3)
 
 import rospy
 import geometry_msgs.msg
+from moveit_msgs.msg import JointConstraint
 from khi_robot_msgs.srv import *
 import moveit_commander
 
@@ -24,7 +25,7 @@ class RobotObject(QThread):
     def __init__(self):
         super().__init__()
         self._run_flag = False
-        self.Home_pose = [0.3, 0, 0.3]
+        self.Home_pose = [0.4, 0, 0.3]
         self.HomePoseFlag = False
         self.Hand = self.Home_pose
         self.Compress = False
@@ -98,14 +99,29 @@ class RobotObject(QThread):
         self.mgc.set_max_velocity_scaling_factor(self.max_vel)
         self.mgc.set_max_acceleration_scaling_factor(self.max_acc)
 
-        self.mgc.set_workspace(list(*self.min_cord, *self.max_cord))
+        self.mgc.set_workspace([*self.min_cord, *self.max_cord])
         self.mgc.set_num_planning_attempts(2)
 
+        limits = rospy.get_param('/' + RobotModel.upper() + '/joint_limits')
+        limits["joint1"]["min_position"] = -1.9198621
+        limits["joint1"]["max_position"] = -1.2217304
+        limits["joint4"]["min_position"] = -0.3490658
+        limits["joint4"]["max_position"] = 0.3490658
+        rospy.set_param('/' + RobotModel.upper() + '/joint_limits', limits)
+
+        '''
         empty_joint_constraints = JointConstraint()
         empty_joint_constraints.joint_name = "joint1"
-        empty_joint_constraints.bounds = [-110, -70]
+        empty_joint_constraints.position = -70
+        empty_joint_constraints.empty_joint_constraints.tolerance_above = 1.5
         empty_joint_constraints.weight = 1
-        self.mgc.set_path_constraints(self, empty_joint_constraints)
+        empty_joint_constraints1 = JointConstraint()
+        empty_joint_constraints1.joint_name = "joint1"
+        empty_joint_constraints1.position = -110
+        empty_joint_constraints1.empty_joint_constraints.tolerance_below = 1.5
+        empty_joint_constraints1.weight = 1
+        self.mgc.set_path_constraints(self, [empty_joint_constraints, empty_joint_constraints1])
+        '''
         # endregion
 
     def RobotStart(self):
@@ -138,11 +154,13 @@ class RobotObject(QThread):
             if self.Compress and not self.CompressFlag:
                 cmdhandler_client("as", "OPEN")
                 self.CompressFlag = True
-                self.sleep(1)
+                self.mgc.stop()
+                self.sleep(5)
             elif not self.Compress and self.CompressFlag:
                 cmdhandler_client("as", "CLOSE")
                 self.CompressFlag = False
-                self.sleep(1)
+                self.mgc.stop()
+                self.sleep(5)
 
             pose_goal = geometry_msgs.msg.Pose()
             pose_goal.position.x = self.Hand[0]
@@ -161,13 +179,13 @@ class RobotObject(QThread):
             self.rate.sleep()
 
     def SetHand(self, CamInfo, PrecisionParam):
-        x = ((self.max_cord[0] - self.min_cord[0]) / (CamInfo.height * PrecisionParam))\
-            * (CamInfo.height * PrecisionParam // 2 + CamInfo.Hand[1]) + 0.3
-        y = ((self.max_cord[1] - self.min_cord[1]) / (CamInfo.width * PrecisionParam)) * CamInfo.Hand[0]
-        z = (CamInfo.Hand[2] - CamInfo.CalibDist) / 1000
+        x = ((self.max_cord[0] - self.min_cord[0]) / (CamInfo["height"] * PrecisionParam))\
+            * (CamInfo["height"] * PrecisionParam // 2 + CamInfo["Hand"][1]) + self.min_cord[0]
+        y = -((self.max_cord[1] - self.min_cord[1]) / (CamInfo["width"] * PrecisionParam)) * CamInfo["Hand"][0]
+        z = (CamInfo["CalibDist"] - CamInfo["Hand"][2]) / 1000 + self.Home_pose[2]
 
         self.Hand = [x, y, z]
-        self.Compress = CamInfo.Compress
+        self.Compress = CamInfo["Compress"]
 
         '''
         for i, cord in enumerate(self.Hand):
@@ -194,6 +212,7 @@ class RobotObject(QThread):
             ret = get_driver_state()
             self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
 
+'''
 class KhiRobot:
     arm_name = ''
     arm_num = 1
@@ -221,6 +240,7 @@ class KhiRobot:
             self.max_pos_list.append(limits['joint'+str(jt+1)]['max_position'])
             self.max_vel_list.append(limits['joint'+str(jt+1)]['max_velocity'])
             self.max_acc_list.append(limits['joint'+str(jt+1)]['max_acceleration'])
+'''
 
 def cmdhandler_client(type_arg, cmd_arg):
     rospy.wait_for_service(service)

@@ -23,5 +23,10 @@ os.system("gnome-terminal -- bash -c \"source /home/user/Documents/GitHub/HandTr
 
 os.system(f"gnome-terminal --tab -- bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch\"")
 '''
+'''
 min = [1,2,3]
-print(*min)
+print(str(False))
+'''
+
+
+

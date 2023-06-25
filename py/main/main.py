@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
@@ -687,8 +689,8 @@ class Ui_MainWindow(object):
 
     def Hand_update(self, Cordinate, SizeFactor, PrecisionParam, HandExist, Compress):
         if HandExist:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, PrecisionParam, Compress)
-                                     + " Сжать: " + Compress)
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, PrecisionParam, Compress) + "\n"
+                                     + "Сжать: " + str(Compress))
             if not self.HandExist:
                 self.HandExist = True
         elif self.HandExist:
