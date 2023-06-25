@@ -101,12 +101,10 @@ class HandTracker:
             if (abs(self.Fixed_x - self.Real_x)) > self.FixedParam:
                 self.Fixed_x = self.Real_x
 
-            '''
             y = -int(self.Fixed_y * math.cos(self.CamAngle) - self.Fixed_z * math.sin(self.CamAngle))
             z = -int(self.Fixed_y * math.sin(self.CamAngle) + self.Fixed_z * math.cos(self.CamAngle))
-            '''
 
-            self.Hand = [self.Fixed_x, self.Fixed_y, self.Fixed_z]
-            return f"X:{self.Fixed_x}, Y:{self.Fixed_y}, Z:{self.Fixed_z}"
+            self.Hand = [self.Fixed_x, y, z]
+            return f"X:{self.Fixed_x}, Y:{y}, Z:{z}"
 
 

@@ -52,7 +52,7 @@ class VideoThread(QThread):
                     self.stop()
                     break
 
-                image = cv2.flip(image, 1)
+                # image = cv2.flip(image, 1)
 
                 results = hands.process(image)
                 if results.multi_hand_landmarks:
@@ -609,6 +609,7 @@ class Ui_MainWindow(object):
         self.CameraThread.Cam_error_signal.connect(self.Cam_error)
         self.CameraThread.Hand_find.connect(self.Hand_update)
         self.RobotThread.GetHand.connect(self.HandToRobot)
+        self.RobotThread.ErrorRobotConnect.connect(self.RobotMessage)
 
         # Попытка подключится к камере по умолчанию
         # self.new_Cam()
@@ -620,6 +621,9 @@ class Ui_MainWindow(object):
 
     def HandToRobot(self):
         self.RobotThread.SetHand(self.HandTracker.Hand)
+
+    def RobotMessage(self, mes):
+        self.showDialog(mes)
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
@@ -658,7 +662,8 @@ class Ui_MainWindow(object):
         self.Hand_Coords.setText("No hand")
         self.showDialog("Камера не найдена.\n"
                         "Всем подключённым камерам присваиваются номера от нуля и далее по возрастанию. \n"
-                        "0 - по умолчанию веб-камера.")
+                        "0 - по умолчанию веб-камера."
+                        "* Иногда номера могут пропускаться")
 
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""

@@ -3,8 +3,9 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 import os
 
-os.system("gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-          "roscore; exec bash\"'")
+os.system(
+    "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+    "roscore; exec bash\"'")
 
 QThread.sleep(5)
 
@@ -16,13 +17,18 @@ import moveit_commander
 service = '/khi_robot_command_service'
 planner = 'RRTConnectkConfigDefault'
 
+
 class RobotObject(QThread):
     GetHand = pyqtSignal()
+    RobotMessage = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self._run_flag = False
-        self.Hand = [0,0,0,0,0,0]
+        self.Home_pose = [0.3, 0, 0.3]
+        self.Hand = self.Home_pose
+        self.max_cord = [0.8, 0.3, 0.6]
+        self.min_cord = [0.3, -0.3, 0]
 
         rospy.init_node('message', anonymous=True)
 
@@ -39,7 +45,7 @@ class RobotObject(QThread):
         # endregion
 
         # Частота передачи
-        self.frequency = 2
+        self.frequency = 10
         self.rate = rospy.Rate(self.frequency)
 
         rospy.loginfo("Init successful")
@@ -54,18 +60,28 @@ class RobotObject(QThread):
                 "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
                 f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}; exec bash\"'")
         self.sleep(5)
-        os.system(f"gnome-terminal -e 'bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch; exec bash\"'")
+        try:
+            get_driver_state()
+        except:
+            self.RobotMessage.emit("Не удалось подключиться к роботу")
+            return
+        self.InitMoveGroupCommander()
+
+    def InitMoveGroupCommander(self):
+        os.system(
+            f"gnome-terminal -e 'bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch; exec bash\"'")
         self.sleep(5)
 
         ######################################### set range of move #####################################################
         # region
-        self.khi_robot = KhiRobot()
+        # self.khi_robot = KhiRobot()
+        group = '/manipulator'
 
         # RobotCommander
         # rc = moveit_commander.RobotCommander()
 
         # MoveGroupCommander
-        self.mgc = moveit_commander.MoveGroupCommander(self.khi_robot.group)
+        self.mgc = moveit_commander.MoveGroupCommander(group)
 
         # mgc setting
         self.mgc.set_planner_id(planner)
@@ -81,16 +97,12 @@ class RobotObject(QThread):
 
     def RobotStart(self):
         if not self._run_flag:
-            self._run_flag = True
-            self.start()
-
             ret = get_driver_state()
-            if ret.cmd_ret == 'ERROR':
+            if ret.cmd_ret == 'ERROR' or ret.cmd_ret == 'HOLDED':
                 cmdhandler_client('driver', 'restart')
                 rospy.sleep(3)
-
-    def RobotStart(self):
-        if not self._run_flag:
+            ret = get_driver_state()
+            self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
             self._run_flag = True
             self.start()
 
@@ -99,9 +111,12 @@ class RobotObject(QThread):
             self.GetHand.emit()
 
             pose_goal = geometry_msgs.msg.Pose()
-            pose_goal.position.x = self.Hand[0]/100
-            pose_goal.position.y = self.Hand[1]/100
-            pose_goal.position.z = self.Hand[2]/100
+            pose_goal.position.x = self.Hand[0]
+            pose_goal.position.y = self.Hand[1]
+            pose_goal.position.z = self.Hand[2]
+
+            # cmdhandler_client("as", "OPEN/CLOSE")
+
             '''
             pose_goal.orientation.x = self.Hand[3]
             pose_goal.orientation.y = self.Hand[4]
@@ -114,15 +129,29 @@ class RobotObject(QThread):
 
             self.rate.sleep()
 
+    def SetHand(self, Hand, width, height, PrecisionParam, CalibDist):
+        self.Hand = [((self.max_cord[0] - self.min_cord[0]) / (height * PrecisionParam)) * (height * PrecisionParam // 2 - Hand[1]),
+                     ((self.max_cord[1] - self.min_cord[1]) / (width * PrecisionParam)) * Hand[0],
+                     (Hand[2] - CalibDist) / 100 + 0.3]
 
-    def SetHand(self, Hand):
-        self.Hand = Hand
+        for i, cord in enumerate(self.Hand):
+            if cord > self.max_cord[i]:
+                self.Hand[i] = self.max_cord[i]
+            elif cord < self.min_cord[i]:
+                self.Hand[i] = self.min_cord[i]
 
     def stop(self):
         """Sets run flag to False and waits for thread to finish"""
         self._run_flag = False
         self.wait()
+        cmdhandler_client('driver', 'hold')
+        rospy.sleep(3)
+        ret = get_driver_state()
+        self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
 
+
+
+'''
 class KhiRobot:
     arm_name = ''
     arm_num = 1
@@ -150,8 +179,10 @@ class KhiRobot:
             self.max_pos_list.append(limits['joint'+str(jt+1)]['max_position'])
             self.max_vel_list.append(limits['joint'+str(jt+1)]['max_velocity'])
             self.max_acc_list.append(limits['joint'+str(jt+1)]['max_acceleration'])
+'''
 
-def cmdhandler_client(type_arg , cmd_arg):
+
+def cmdhandler_client(type_arg, cmd_arg):
     rospy.wait_for_service(service)
     try:
         khi_robot_command_service = rospy.ServiceProxy(service, KhiRobotCmd)
@@ -159,6 +190,7 @@ def cmdhandler_client(type_arg , cmd_arg):
         return resp1
     except rospy.ServiceException as e:
         rospy.loginfo('Service call failed: %s', e)
+
 
 def get_driver_state():
     ret = cmdhandler_client('driver', 'get_status')
