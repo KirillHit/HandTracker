@@ -34,6 +34,7 @@ class HandTracker:
         self.Fixed_z = 0
 
         self.Hand = [0, 0, self.CalibDist]
+        self.Compress = False
 
     # При малых перемещениях вызывает ошибку слишком малого значения
     '''
@@ -47,7 +48,7 @@ class HandTracker:
         return int(self.mapping(time, a, b, c))
     '''
 
-    def give_Hand (self, Center, SizeFactor, PrecisionParam):
+    def give_Hand (self, Center, SizeFactor, PrecisionParam, Compress):
         Now = time.time_ns()
         # Проверка пропажи руки
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer*10**9:
@@ -109,5 +110,16 @@ class HandTracker:
 
             self.Hand = [self.Fixed_x, self.Fixed_y, self.Fixed_z]
             return f"X:{self.Fixed_x}, Y:{self.Fixed_y}, Z:{self.Fixed_z}"
+
+    def get_Hand (self):
+        Now = time.time_ns()
+        # Проверка пропажи руки
+        if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer * 10 ** 9:
+            self.TrackingProcess = False
+
+        return {"Hand": self.Hand, "width": self.width, "height": self.height,
+                "CalibDist": self.CalibDist, "Compress": self.Compress}
+
+
 
 

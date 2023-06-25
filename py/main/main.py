@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QMessageBox
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     Cam_error_signal = pyqtSignal(int)
-    Hand_find = pyqtSignal(tuple, int, int, bool)
+    Hand_find = pyqtSignal(tuple, int, int, bool, bool)
 
     def __init__(self):
         super().__init__()
@@ -124,7 +124,7 @@ class VideoThread(QThread):
                             angles.append(angle)
 
                         # Получение среднеарифметическое всех углов
-                        avgAngle = np.average(angles)
+                        avgAngle = np.average(angles) < 2.6
 
                         cv2.putText(image, f"SizeFactor: {SizeFactor}", (5, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                                     (0, 255, 255), 1)
@@ -135,9 +135,9 @@ class VideoThread(QThread):
                         if self._run_flag:
                             self.Hand_find.emit((Center_x - self.width * self.PrecisionParam // 2,
                                                 Center_y - self.height * self.PrecisionParam // 2),
-                                                SizeFactor, self.PrecisionParam, True)
+                                                SizeFactor, self.PrecisionParam, True, avgAngle)
                 else:
-                    self.Hand_find.emit((0,0), 0, 0, False)
+                    self.Hand_find.emit((0, 0), 0, 0, False, 0)
 
                 cur_time = time.time_ns()
                 fps = 10 ** 9 // (cur_time - self.prev_time)
@@ -159,6 +159,7 @@ class Ui_MainWindow(object):
         self.CameraThread = VideoThread()
         self.RobotThread = RobotControl.RobotObject()
         self.HandTracker = HandObject.HandTracker()
+        self.HandExist = False
 
     def setupUi(self, MainWindow):
         # Код окна из PQ дизайнера
@@ -640,7 +641,7 @@ class Ui_MainWindow(object):
         self.CameraThread.Cam_error_signal.connect(self.Cam_error)
         self.CameraThread.Hand_find.connect(self.Hand_update)
         self.RobotThread.GetHand.connect(self.HandToRobot)
-        self.RobotThread.RobotMessage.connect(self.RobotMessage)
+        self.RobotThread.RobotMessage.connect(self.showDialog)
 
         # Попытка подключится к камере по умолчанию
         # self.new_Cam()
@@ -649,19 +650,21 @@ class Ui_MainWindow(object):
 
     def RobotConnect(self):
         self.RobotThread.RobotConnect(self.ModelRobot.currentText(), self.SimulationCheckBox.isChecked(), self.IpLineEdit.text())
+        self.RobotThread.GoHome()
 
     def HandToRobot(self):
-        self.RobotThread.SetHand(self.HandTracker.Hand, self.HandTracker.width, self.HandTracker.height,
-                                 self.CameraThread.PrecisionParam, self.HandTracker.CalibDist)
-
-    def RobotMessage(self, mes):
-        self.showDialog(mes)
+        if self.HandTracker.TrackingProcess:
+            if self.HandExist:
+                self.RobotThread.SetHand(self.HandTracker.get_Hand(), self.CameraThread.PrecisionParam)
+        elif not self.RobotThread.HomePoseFlag:
+            self.RobotThread.GoHome()
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
             self.CameraThread.set_cam(int(self.NumCamEditLine.text()))
             self.HandTracker.width = self.CameraThread.width
             self.HandTracker.height = self.CameraThread.height
+            self.RobotThread.GoHome()
         else:
             self.showDialog("Введите число большее и равное нулю")
 
@@ -682,12 +685,15 @@ class Ui_MainWindow(object):
         """Updates the image_label with a new opencv image"""
         self.Lab_Cam.setPixmap(self.convert_cv_qt(cv_img))
 
-    def Hand_update(self, Cordinate, SizeFactor, PrecisionParam, HandExist):
+    def Hand_update(self, Cordinate, SizeFactor, PrecisionParam, HandExist, Compress):
         if HandExist:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, PrecisionParam))
-        else:
-            if self.Hand_Coords.text() != "No hand":
-                self.Hand_Coords.setText("No hand")
+            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, PrecisionParam, Compress)
+                                     + " Сжать: " + Compress)
+            if not self.HandExist:
+                self.HandExist = True
+        elif self.HandExist:
+            self.Hand_Coords.setText("No hand")
+            self.HandExist = False
 
     def Cam_error(self, Current_cam):
         self.Lab_Cam.setText(f"Камера {Current_cam} не найдена")

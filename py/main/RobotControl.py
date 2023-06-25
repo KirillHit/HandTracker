@@ -25,9 +25,17 @@ class RobotObject(QThread):
         super().__init__()
         self._run_flag = False
         self.Home_pose = [0.3, 0, 0.3]
+        self.HomePoseFlag = False
         self.Hand = self.Home_pose
+        self.Compress = False
+        self.CompressFlag = False
+
+        self.PrevHand = None
+        self.PrevCompress = None
+
         self.max_cord = [0.8, 0.3, 0.6]
         self.min_cord = [0.3, -0.3, 0]
+
         self.ConnectFlag = False
 
         rospy.init_node('message', anonymous=True)
@@ -70,14 +78,14 @@ class RobotObject(QThread):
 
         ######################################### set range of move #####################################################
         # region
-        self.khi_robot = KhiRobot()
-        #group = '/manipulator'
+        #self.khi_robot = KhiRobot()
+        group = 'manipulator'
 
         # RobotCommander
         # rc = moveit_commander.RobotCommander()
 
         # MoveGroupCommander
-        self.mgc = moveit_commander.MoveGroupCommander(self.khi_robot.group)
+        self.mgc = moveit_commander.MoveGroupCommander(group)
 
         # mgc setting
         self.mgc.set_planner_id(planner)
@@ -89,6 +97,15 @@ class RobotObject(QThread):
         self.mgc.set_max_acceleration_scaling_factor(self.min_acc)
         self.mgc.set_max_velocity_scaling_factor(self.max_vel)
         self.mgc.set_max_acceleration_scaling_factor(self.max_acc)
+
+        self.mgc.set_workspace(list(*self.min_cord, *self.max_cord))
+        self.mgc.set_num_planning_attempts(2)
+
+        empty_joint_constraints = JointConstraint()
+        empty_joint_constraints.joint_name = "joint1"
+        empty_joint_constraints.bounds = [-110, -70]
+        empty_joint_constraints.weight = 1
+        self.mgc.set_path_constraints(self, empty_joint_constraints)
         # endregion
 
     def RobotStart(self):
@@ -97,8 +114,13 @@ class RobotObject(QThread):
             if ret.cmd_ret == 'ERROR' or ret.cmd_ret == 'HOLDED':
                 cmdhandler_client('driver', 'restart')
                 rospy.sleep(3)
+
             ret = get_driver_state()
             self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
+
+            self.PrevHand = None
+            self.PrevCompress = None
+
             self._run_flag = True
             self.start()
 
@@ -106,35 +128,61 @@ class RobotObject(QThread):
         while self._run_flag and not rospy.is_shutdown():
             self.GetHand.emit()
 
+            # Пропуск идентичных запросов
+            if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
+                self.rate.sleep()
+                continue
+            self.PrevCompress = self.Compress
+            self.PrevHand = self.Hand
+
+            if self.Compress and not self.CompressFlag:
+                cmdhandler_client("as", "OPEN")
+                self.CompressFlag = True
+                self.sleep(1)
+            elif not self.Compress and self.CompressFlag:
+                cmdhandler_client("as", "CLOSE")
+                self.CompressFlag = False
+                self.sleep(1)
+
             pose_goal = geometry_msgs.msg.Pose()
             pose_goal.position.x = self.Hand[0]
             pose_goal.position.y = self.Hand[1]
             pose_goal.position.z = self.Hand[2]
-
-            # cmdhandler_client("as", "OPEN/CLOSE")
 
             pose_goal.orientation.x = 1
             '''
             pose_goal.orientation.y = self.Hand[4]
             pose_goal.orientation.z = self.Hand[5]
             '''
-            print(pose_goal)
             self.mgc.set_pose_target(pose_goal)
             self.mgc.go()
             self.mgc.clear_pose_targets()
 
             self.rate.sleep()
 
-    def SetHand(self, Hand, width, height, PrecisionParam, CalibDist):
-        self.Hand = [((self.max_cord[0] - self.min_cord[0]) / (height * PrecisionParam)) * (height * PrecisionParam // 2 + Hand[1]) + 0.3,
-                     ((self.max_cord[1] - self.min_cord[1]) / (width * PrecisionParam)) * Hand[0],
-                     (Hand[2] - CalibDist) / 1000]
-        print(Hand)
+    def SetHand(self, CamInfo, PrecisionParam):
+        x = ((self.max_cord[0] - self.min_cord[0]) / (CamInfo.height * PrecisionParam))\
+            * (CamInfo.height * PrecisionParam // 2 + CamInfo.Hand[1]) + 0.3
+        y = ((self.max_cord[1] - self.min_cord[1]) / (CamInfo.width * PrecisionParam)) * CamInfo.Hand[0]
+        z = (CamInfo.Hand[2] - CamInfo.CalibDist) / 1000
+
+        self.Hand = [x, y, z]
+        self.Compress = CamInfo.Compress
+
+        '''
         for i, cord in enumerate(self.Hand):
             if cord > self.max_cord[i]:
                 self.Hand[i] = self.max_cord[i]
             elif cord < self.min_cord[i]:
                 self.Hand[i] = self.min_cord[i]
+        if self.HomePoseFlag:
+            self.HomePoseFlag = False
+        '''
+
+    def GoHome(self):
+        self.Hand = self.Home_pose
+        self.Compress = False
+        self.HomePoseFlag = True
 
     def stop(self):
         if self._run_flag:
