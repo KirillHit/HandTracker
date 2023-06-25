@@ -64,13 +64,19 @@ class VideoThread(QThread):
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.INDEX_FINGER_MCP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.MIDDLE_FINGER_MCP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.RING_FINGER_MCP],
-                            hand_landmarks.landmark[self.mp_hands.HandLandmark.PINKY_MCP]
+                            hand_landmarks.landmark[self.mp_hands.HandLandmark.PINKY_MCP],
+
+                            hand_landmarks.landmark[self.mp_hands.HandLandmark.INDEX_FINGER_PIP],
+                            hand_landmarks.landmark[self.mp_hands.HandLandmark.MIDDLE_FINGER_PIP],
+                            hand_landmarks.landmark[self.mp_hands.HandLandmark.RING_FINGER_PIP],
+                            hand_landmarks.landmark[self.mp_hands.HandLandmark.PINKY_PIP],
                         ]
                         # Заполнение матрицы точек руки
                         all_x = [int(v.x * self.width * self.PrecisionParam) for v in Marks]
                         all_y = [int(v.y * self.height * self.PrecisionParam) for v in Marks]
-                        all_z = [int(v.z * self.width * self.PrecisionParam) for v in
-                                 Marks]  # Z использует примерно тот же масштаб, что и x
+                        all_z = [int(v.z * self.width * self.PrecisionParam) for v in Marks] 
+                        # Z использует примерно тот же масштаб, что и x
+
                         all_t = np.array([all_x, all_y, all_z], dtype=np.int32)
                         # Определение центра руки
                         Center_x = sum(all_t[0][:5]) // 5
@@ -94,6 +100,35 @@ class VideoThread(QThread):
                         m = np.array([[all_t[:, v][i]-all_t[:, v-1][i] for v in reversed(range(2, 5))] for i in range(3)])
                         SizeFactor = sum(np.sqrt(sum(np.power(m[:, i], 2) for i in range(3)))) // 3
                         '''
+
+                        # Проверка на сжатие руки
+                        angles = []
+
+                        wirst = all_t[0]
+                        for fingerNumber in range(4):
+                            baseOfFinger = all_t[fingerNumber + 1]
+                            fingerPip = all_t[fingerNumber + 5]
+
+                            baseVector = wirst - baseOfFinger
+                            fingerVector = fingerPip - baseOfFinger
+                            ##baseVector = [wirst[0] - baseOfFinger[0], wirst[1] - baseOfFinger[1], wirst[2] - baseOfFinger[2]]
+                            ##fingerVector = [fingerPip[0] - baseOfFinger[0], fingerPip[1] - baseOfFinger[1], fingerPip[2] - baseOfFinger[2]]
+
+                            baseVectorModeule = np.sqrt(np.sum(np.power(baseVector, 2)))
+                            fingerVectorModule = np.sqrt(np.sum(np.power(fingerVector, 2)))
+
+                            vsum = np.sum(baseVector * fingerVector)
+                            ##vsum = baseVector[0]*fingerVector[0] + baseVector[1]*fingerVector[1] + baseVector[2]*fingerVector[2]
+                            angle = np.arccos(vsum / (baseVectorModeule*fingerVectorModule))
+
+                            # Записываем углы для каждого пальца
+                            angles[fingerNumber] = angle
+
+                        # Получение среднеарифметическое всех углов
+                        avgAngle = np.average[angles]
+                        # Выводим средний угол
+                        print(avgAngle)
+
 
                         cv2.putText(image, f"SizeFactor: {SizeFactor}", (5, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                                     (0, 255, 255), 1)
