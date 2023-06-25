@@ -7,7 +7,6 @@ class HandTracker:
     def __init__(self):
         self.SaveSize = None
         self.TrackingProcess = False
-        self.Hand = [0,0,0]
 
         self.height = 1
         self.width = 1
@@ -33,6 +32,8 @@ class HandTracker:
         self.Fixed_x = 0
         self.Fixed_y = 0
         self.Fixed_z = 0
+
+        self.Hand = [0, 0, self.CalibDist]
 
     # При малых перемещениях вызывает ошибку слишком малого значения
     '''
@@ -92,7 +93,7 @@ class HandTracker:
 
             self.Real_z = sum(self.approx_z[-i-1:])//(i+1)
             self.Real_x = sum(self.approx_x[-i-1:])//(i+1)
-            self.Real_y = sum(self.approx_y[-i-1:])//(i+1)
+            self.Real_y = - sum(self.approx_y[-i-1:])//(i+1)
 
             if (abs(self.Fixed_z - self.Real_z)) > self.FixedParam_Z:
                 self.Fixed_z = self.Real_z

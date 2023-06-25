@@ -65,7 +65,6 @@ class VideoThread(QThread):
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.MIDDLE_FINGER_MCP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.RING_FINGER_MCP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.PINKY_MCP],
-
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.INDEX_FINGER_PIP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.MIDDLE_FINGER_PIP],
                             hand_landmarks.landmark[self.mp_hands.HandLandmark.RING_FINGER_PIP],
@@ -104,10 +103,10 @@ class VideoThread(QThread):
                         # Проверка на сжатие руки
                         angles = []
 
-                        wirst = all_t[0]
+                        wirst = all_t[:, 0]
                         for fingerNumber in range(4):
-                            baseOfFinger = all_t[fingerNumber + 1]
-                            fingerPip = all_t[fingerNumber + 5]
+                            baseOfFinger = all_t[:, fingerNumber + 1]
+                            fingerPip = all_t[:, fingerNumber + 5]
 
                             baseVector = wirst - baseOfFinger
                             fingerVector = fingerPip - baseOfFinger
@@ -122,13 +121,10 @@ class VideoThread(QThread):
                             angle = np.arccos(vsum / (baseVectorModeule*fingerVectorModule))
 
                             # Записываем углы для каждого пальца
-                            angles[fingerNumber] = angle
+                            angles.append(angle)
 
                         # Получение среднеарифметическое всех углов
-                        avgAngle = np.average[angles]
-                        # Выводим средний угол
-                        print(avgAngle)
-
+                        avgAngle = np.average(angles)
 
                         cv2.putText(image, f"SizeFactor: {SizeFactor}", (5, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6,
                                     (0, 255, 255), 1)
@@ -644,7 +640,7 @@ class Ui_MainWindow(object):
         self.CameraThread.Cam_error_signal.connect(self.Cam_error)
         self.CameraThread.Hand_find.connect(self.Hand_update)
         self.RobotThread.GetHand.connect(self.HandToRobot)
-        self.RobotThread.ErrorRobotConnect.connect(self.RobotMessage)
+        self.RobotThread.RobotMessage.connect(self.RobotMessage)
 
         # Попытка подключится к камере по умолчанию
         # self.new_Cam()
@@ -655,7 +651,8 @@ class Ui_MainWindow(object):
         self.RobotThread.RobotConnect(self.ModelRobot.currentText(), self.SimulationCheckBox.isChecked(), self.IpLineEdit.text())
 
     def HandToRobot(self):
-        self.RobotThread.SetHand(self.HandTracker.Hand)
+        self.RobotThread.SetHand(self.HandTracker.Hand, self.HandTracker.width, self.HandTracker.height,
+                                 self.CameraThread.PrecisionParam, self.HandTracker.CalibDist)
 
     def RobotMessage(self, mes):
         self.showDialog(mes)

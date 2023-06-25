@@ -3,11 +3,10 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 import os
 
-os.system(
-    "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-    "roscore; exec bash\"'")
+os.system("gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+          "roscore\"")
 
-QThread.sleep(5)
+QThread.sleep(3)
 
 import rospy
 import geometry_msgs.msg
@@ -29,6 +28,7 @@ class RobotObject(QThread):
         self.Hand = self.Home_pose
         self.max_cord = [0.8, 0.3, 0.6]
         self.min_cord = [0.3, -0.3, 0]
+        self.ConnectFlag = False
 
         rospy.init_node('message', anonymous=True)
 
@@ -53,35 +53,31 @@ class RobotObject(QThread):
     def RobotConnect(self, RobotModel, SimulationFlag, RobotIp="192.168.0.2"):
         if SimulationFlag:
             os.system(
-                "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true; exec bash\"'")
+                "gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true\"")
         else:
             os.system(
-                "gnome-terminal -e 'bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}; exec bash\"'")
-        self.sleep(5)
-        try:
-            get_driver_state()
-        except:
-            self.RobotMessage.emit("Не удалось подключиться к роботу")
-            return
-        self.InitMoveGroupCommander()
+                "gnome-terminal --geometry=0x0 --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}\"")
+        self.sleep(3)
+        # rospy.Subscriber("rs007l_arm_controller/state", str, lambda a: print(a))
+        self.InitMoveGroupCommander(RobotModel)
+        self.ConnectFlag = True
 
-    def InitMoveGroupCommander(self):
-        os.system(
-            f"gnome-terminal -e 'bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch; exec bash\"'")
-        self.sleep(5)
+    def InitMoveGroupCommander(self, RobotModel):
+        os.system(f"gnome-terminal --tab -- bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch\"")
+        self.sleep(10)
 
         ######################################### set range of move #####################################################
         # region
-        # self.khi_robot = KhiRobot()
-        group = '/manipulator'
+        self.khi_robot = KhiRobot()
+        #group = '/manipulator'
 
         # RobotCommander
         # rc = moveit_commander.RobotCommander()
 
         # MoveGroupCommander
-        self.mgc = moveit_commander.MoveGroupCommander(group)
+        self.mgc = moveit_commander.MoveGroupCommander(self.khi_robot.group)
 
         # mgc setting
         self.mgc.set_planner_id(planner)
@@ -96,7 +92,7 @@ class RobotObject(QThread):
         # endregion
 
     def RobotStart(self):
-        if not self._run_flag:
+        if not self._run_flag and self.ConnectFlag:
             ret = get_driver_state()
             if ret.cmd_ret == 'ERROR' or ret.cmd_ret == 'HOLDED':
                 cmdhandler_client('driver', 'restart')
@@ -117,12 +113,12 @@ class RobotObject(QThread):
 
             # cmdhandler_client("as", "OPEN/CLOSE")
 
+            pose_goal.orientation.x = 1
             '''
-            pose_goal.orientation.x = self.Hand[3]
             pose_goal.orientation.y = self.Hand[4]
             pose_goal.orientation.z = self.Hand[5]
             '''
-
+            print(pose_goal)
             self.mgc.set_pose_target(pose_goal)
             self.mgc.go()
             self.mgc.clear_pose_targets()
@@ -130,10 +126,10 @@ class RobotObject(QThread):
             self.rate.sleep()
 
     def SetHand(self, Hand, width, height, PrecisionParam, CalibDist):
-        self.Hand = [((self.max_cord[0] - self.min_cord[0]) / (height * PrecisionParam)) * (height * PrecisionParam // 2 - Hand[1]),
+        self.Hand = [((self.max_cord[0] - self.min_cord[0]) / (height * PrecisionParam)) * (height * PrecisionParam // 2 + Hand[1]) + 0.3,
                      ((self.max_cord[1] - self.min_cord[1]) / (width * PrecisionParam)) * Hand[0],
-                     (Hand[2] - CalibDist) / 100 + 0.3]
-
+                     (Hand[2] - CalibDist) / 1000]
+        print(Hand)
         for i, cord in enumerate(self.Hand):
             if cord > self.max_cord[i]:
                 self.Hand[i] = self.max_cord[i]
@@ -141,17 +137,15 @@ class RobotObject(QThread):
                 self.Hand[i] = self.min_cord[i]
 
     def stop(self):
-        """Sets run flag to False and waits for thread to finish"""
-        self._run_flag = False
-        self.wait()
-        cmdhandler_client('driver', 'hold')
-        rospy.sleep(3)
-        ret = get_driver_state()
-        self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
+        if self._run_flag:
+            """Sets run flag to False and waits for thread to finish"""
+            self._run_flag = False
+            self.wait()
+            cmdhandler_client('driver', 'hold')
+            rospy.sleep(3)
+            ret = get_driver_state()
+            self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
 
-
-
-'''
 class KhiRobot:
     arm_name = ''
     arm_num = 1
@@ -179,8 +173,6 @@ class KhiRobot:
             self.max_pos_list.append(limits['joint'+str(jt+1)]['max_position'])
             self.max_vel_list.append(limits['joint'+str(jt+1)]['max_velocity'])
             self.max_acc_list.append(limits['joint'+str(jt+1)]['max_acceleration'])
-'''
-
 
 def cmdhandler_client(type_arg, cmd_arg):
     rospy.wait_for_service(service)
