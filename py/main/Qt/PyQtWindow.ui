@@ -300,7 +300,7 @@
               <item row="0" column="1">
                <widget class="QSlider" name="CalibCam">
                 <property name="maximum">
-                 <number>200</number>
+                 <number>500</number>
                 </property>
                 <property name="pageStep">
                  <number>1</number>
@@ -430,7 +430,7 @@
                  <number>1</number>
                 </property>
                 <property name="value">
-                 <number>90</number>
+                 <number>0</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -533,6 +533,9 @@ color: rgb(0, 170, 0);</string>
              </layout>
             </item>
             <item>
+             <layout class="QVBoxLayout" name="verticalLayout_2"/>
+            </item>
+            <item>
              <widget class="QLabel" name="label_9">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -562,16 +565,6 @@ color: rgb(0, 170, 0);</string>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>Модель робота:</string>
-                </property>
-                <property name="margin">
-                 <number>5</number>
-                </property>
-               </widget>
-              </item>
               <item>
                <widget class="QComboBox" name="ModelRobot">
                 <item>

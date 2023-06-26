@@ -317,7 +317,7 @@ class Ui_MainWindow(object):
         self.TimeApprox.setObjectName("TimeApprox")
         self.gridLayout_4.addWidget(self.TimeApprox, 2, 1, 1, 1)
         self.CalibCam = QtWidgets.QSlider(self.frame)
-        self.CalibCam.setMaximum(200)
+        self.CalibCam.setMaximum(500)
         self.CalibCam.setPageStep(1)
         self.CalibCam.setProperty("value", 80)
         self.CalibCam.setOrientation(QtCore.Qt.Horizontal)
@@ -656,8 +656,9 @@ class Ui_MainWindow(object):
 
     def HandToRobot(self):
         if self.HandTracker.TrackingProcess:
+            CamInfo = self.HandTracker.get_Hand()
             if self.HandExist:
-                self.RobotThread.SetHand(self.HandTracker.get_Hand(), self.CameraThread.PrecisionParam)
+                self.RobotThread.SetHand(CamInfo, self.CameraThread.PrecisionParam)
         elif not self.RobotThread.HomePoseFlag:
             self.RobotThread.GoHome()
 

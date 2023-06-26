@@ -1,16 +1,17 @@
-import math
 from PyQt5.QtCore import QThread, pyqtSignal
 
 import os
+import math
 
-os.system("gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-          "roscore\"")
+os.system(
+    "gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+    "roscore\"")
 
-QThread.sleep(3)
+QThread.sleep(2)
 
 import rospy
 import geometry_msgs.msg
-from moveit_msgs.msg import JointConstraint
+import moveit_msgs.msg
 from khi_robot_msgs.srv import *
 import moveit_commander
 
@@ -28,6 +29,7 @@ class RobotObject(QThread):
         self.Home_pose = [0.4, 0, 0.3]
         self.HomePoseFlag = False
         self.Hand = self.Home_pose
+
         self.Compress = False
         self.CompressFlag = False
 
@@ -38,6 +40,7 @@ class RobotObject(QThread):
         self.min_cord = [0.3, -0.3, 0]
 
         self.ConnectFlag = False
+        self.InitFlag = False
 
         rospy.init_node('message', anonymous=True)
 
@@ -54,43 +57,63 @@ class RobotObject(QThread):
         # endregion
 
         # Частота передачи
-        self.frequency = 10
+        self.frequency = 15
         self.rate = rospy.Rate(self.frequency)
 
-        rospy.loginfo("Init successful")
-
     def RobotConnect(self, RobotModel, SimulationFlag, RobotIp="192.168.0.2"):
-        if SimulationFlag:
+        if not self.ConnectFlag:
+            if SimulationFlag:
+                os.system(
+                    "gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                    f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true\"")
+            else:
+                os.system(
+                    "gnome-terminal --geometry=0x0 --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
+                    f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}\"")
+            self.sleep(3)
+            # rospy.Subscriber("rs007l_arm_controller/state", str, lambda a: print(a))
             os.system(
-                "gnome-terminal --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch simulation:=true\"")
-        else:
-            os.system(
-                "gnome-terminal --geometry=0x0 --tab -- bash -c \"source /home/user/Documents/GitHub/HandTracker/py/ros_resources/devel/setup.bash; "
-                f"roslaunch khi_robot_bringup {RobotModel}_bringup.launch ip:={RobotIp}\"")
-        self.sleep(3)
-        # rospy.Subscriber("rs007l_arm_controller/state", str, lambda a: print(a))
-        self.InitMoveGroupCommander(RobotModel)
-        self.ConnectFlag = True
+                f"gnome-terminal --tab -- bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch\"")
+            self.sleep(5)
+            self.ConnectFlag = True
+        if not self.InitFlag:
+            self.InitMoveGroupCommander(RobotModel, SimulationFlag)
 
-    def InitMoveGroupCommander(self, RobotModel):
-        os.system(f"gnome-terminal --tab -- bash -c \"roslaunch khi_{RobotModel}_moveit_config moveit_planning_execution.launch\"")
-        self.sleep(10)
-
+    def InitMoveGroupCommander(self, RobotModel, SimulationFlag):
         ######################################### set range of move #####################################################
         # region
-        #self.khi_robot = KhiRobot()
-        group = 'manipulator'
+        # self.khi_robot = KhiRobot()
+        self.group = 'manipulator'
 
         # RobotCommander
-        # rc = moveit_commander.RobotCommander()
+        self.rc = moveit_commander.RobotCommander()
 
         # MoveGroupCommander
-        self.mgc = moveit_commander.MoveGroupCommander(group)
+        self.mgc = moveit_commander.MoveGroupCommander(self.group)
+
+        if SimulationFlag:
+            # Для симуляции переводим робота домашнее положение
+            self.mgc.set_joint_value_target({"joint1": -90 * math.pi / 180, "joint2": -30 * math.pi / 180,
+                                             "joint3": 90 * math.pi / 180, "joint4": 0,
+                                             "joint5": 0, "joint6": 0})
+            self.mgc.go()
+            self.mgc.clear_pose_targets()
+        else:
+            # Проверяем, что робот находится внутри установленной рабочей области
+            self.mgc.set_start_state(self.rc.get_current_state())
+            current_state = self.mgc.get_current_joint_values()
+            if (-140*math.pi/180) < current_state[0] < (-40 * math.pi / 180)\
+                    and (-90 * math.pi / 180) < current_state[1] < (40 * math.pi / 180)\
+                    and (0 * math.pi / 180) < current_state[2] < (2 * math.pi)\
+                    and (-10 * math.pi / 180) < current_state[3] < (10 * math.pi / 180):
+                pass
+            else:
+                self.RobotMessage.emit("Робот находится за пределами установленной рабочей области.")
+                return
 
         # mgc setting
         self.mgc.set_planner_id(planner)
-        self.mgc.set_goal_joint_tolerance(self.accuracy_jt)
+        # self.mgc.set_goal_joint_tolerance(self.accuracy_jt)
         # mgc.set_goal_position_tolerance(accuracy_pos)
         # mgc.set_goal_orientation_tolerance(accuracy_ori)
 
@@ -100,28 +123,19 @@ class RobotObject(QThread):
         self.mgc.set_max_acceleration_scaling_factor(self.max_acc)
 
         self.mgc.set_workspace([*self.min_cord, *self.max_cord])
-        self.mgc.set_num_planning_attempts(2)
+        # self.mgc.set_num_planning_attempts(2)
+        # self.mgc.set_planning_time(1)
 
-        limits = rospy.get_param('/' + RobotModel.upper() + '/joint_limits')
-        limits["joint1"]["min_position"] = -1.9198621
-        limits["joint1"]["max_position"] = -1.2217304
-        limits["joint4"]["min_position"] = -0.3490658
-        limits["joint4"]["max_position"] = 0.3490658
-        rospy.set_param('/' + RobotModel.upper() + '/joint_limits', limits)
+        # Ограничения врашения звеньев
+        joint_constraint_list = [joint_limits(self.mgc.get_joints()[0], -90, 30, 30),
+                                 joint_limits(self.mgc.get_joints()[3], 0, 1, 1)]
+        constraint_list = moveit_msgs.msg.Constraints()
+        constraint_list.name = 'middle_of_travel'
+        constraint_list.joint_constraints = joint_constraint_list
+        self.mgc.set_path_constraints(constraint_list)
 
-        '''
-        empty_joint_constraints = JointConstraint()
-        empty_joint_constraints.joint_name = "joint1"
-        empty_joint_constraints.position = -70
-        empty_joint_constraints.empty_joint_constraints.tolerance_above = 1.5
-        empty_joint_constraints.weight = 1
-        empty_joint_constraints1 = JointConstraint()
-        empty_joint_constraints1.joint_name = "joint1"
-        empty_joint_constraints1.position = -110
-        empty_joint_constraints1.empty_joint_constraints.tolerance_below = 1.5
-        empty_joint_constraints1.weight = 1
-        self.mgc.set_path_constraints(self, [empty_joint_constraints, empty_joint_constraints1])
-        '''
+        self.InitFlag = True
+        self.RobotMessage.emit("Успешно подключено!")
         # endregion
 
     def RobotStart(self):
@@ -136,6 +150,7 @@ class RobotObject(QThread):
 
             self.PrevHand = None
             self.PrevCompress = None
+            self.GoHome()
 
             self._run_flag = True
             self.start()
@@ -143,24 +158,36 @@ class RobotObject(QThread):
     def run(self):
         while self._run_flag and not rospy.is_shutdown():
             self.GetHand.emit()
+            self.rate.sleep()
 
             # Пропуск идентичных запросов
-            if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
-                self.rate.sleep()
+            if self.HomePoseFlag:
+                if self.CurHomePoseFlag:
+                    # rospy.loginfo("Continue")
+                    continue
+                else:
+                    self.CurHomePoseFlag = True
+            elif self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
+                # rospy.loginfo("Continue")
                 continue
+            elif self.CurHomePoseFlag:
+                self.CurHomePoseFlag = False
+
             self.PrevCompress = self.Compress
             self.PrevHand = self.Hand
 
+            self.mgc.set_start_state(self.rc.get_current_state())
+
             if self.Compress and not self.CompressFlag:
-                cmdhandler_client("as", "OPEN")
+                cmdhandler_client("as", "CLOSE")
                 self.CompressFlag = True
                 self.mgc.stop()
-                self.sleep(5)
+                self.sleep(2)
             elif not self.Compress and self.CompressFlag:
-                cmdhandler_client("as", "CLOSE")
+                cmdhandler_client("as", "OPEN")
                 self.CompressFlag = False
                 self.mgc.stop()
-                self.sleep(5)
+                self.sleep(2)
 
             pose_goal = geometry_msgs.msg.Pose()
             pose_goal.position.x = self.Hand[0]
@@ -175,32 +202,36 @@ class RobotObject(QThread):
             self.mgc.set_pose_target(pose_goal)
             self.mgc.go()
             self.mgc.clear_pose_targets()
-
-            self.rate.sleep()
+            #rospy.loginfo("Success")
 
     def SetHand(self, CamInfo, PrecisionParam):
         x = ((self.max_cord[0] - self.min_cord[0]) / (CamInfo["height"] * PrecisionParam))\
-            * (CamInfo["height"] * PrecisionParam // 2 + CamInfo["Hand"][1]) + self.min_cord[0]
-        y = -((self.max_cord[1] - self.min_cord[1]) / (CamInfo["width"] * PrecisionParam)) * CamInfo["Hand"][0]
+            * (CamInfo["height"] * PrecisionParam // 2 - CamInfo["Hand"][1]) + self.min_cord[0]
+        y = ((self.max_cord[1] - self.min_cord[1]) / (CamInfo["width"] * PrecisionParam)) * CamInfo["Hand"][0]
         z = (CamInfo["CalibDist"] - CamInfo["Hand"][2]) / 1000 + self.Home_pose[2]
+        '''
+        x = CamInfo["height"]/100
+        y = CamInfo["Hand"][0]/100
+        z = (CamInfo["CalibDist"] - CamInfo["Hand"][2]) / 100 + self.Home_pose[2]
+        '''
 
         self.Hand = [x, y, z]
         self.Compress = CamInfo["Compress"]
 
-        '''
         for i, cord in enumerate(self.Hand):
             if cord > self.max_cord[i]:
                 self.Hand[i] = self.max_cord[i]
             elif cord < self.min_cord[i]:
                 self.Hand[i] = self.min_cord[i]
+
         if self.HomePoseFlag:
             self.HomePoseFlag = False
-        '''
 
     def GoHome(self):
         self.Hand = self.Home_pose
         self.Compress = False
         self.HomePoseFlag = True
+        self.CurHomePoseFlag = False
 
     def stop(self):
         if self._run_flag:
@@ -208,39 +239,9 @@ class RobotObject(QThread):
             self._run_flag = False
             self.wait()
             cmdhandler_client('driver', 'hold')
-            rospy.sleep(3)
             ret = get_driver_state()
             self.RobotMessage.emit(f"Установлен режим {ret.cmd_ret}")
-
-'''
-class KhiRobot:
-    arm_name = ''
-    arm_num = 1
-    max_jt = 6
-    group = '/manipulator'
-    min_pos_list = []
-    max_pos_list = []
-    max_vel_list = []
-    max_acc_list = []
-    base_pos_list = []
-
-    def __init__(self):
-        self.min_pos_list = []
-        self.max_pos_list = []
-        self.max_vel_list = []
-        self.max_acc_list = []
-        self.arm_name = rospy.get_param('/khi_robot_param/robot') # RS007L
-        limits = rospy.get_param('/'+self.arm_name+'/joint_limits')
-        self.arm_num = 1
-        self.max_jt = 6
-        self.group = 'manipulator'
-        self.base_pos_list = [ 90*math.pi/180, 0, 90*math.pi/180, 0, 90*math.pi/180, 0 ]
-        for jt in range(self.max_jt):
-            self.min_pos_list.append(limits['joint'+str(jt+1)]['min_position'])
-            self.max_pos_list.append(limits['joint'+str(jt+1)]['max_position'])
-            self.max_vel_list.append(limits['joint'+str(jt+1)]['max_velocity'])
-            self.max_acc_list.append(limits['joint'+str(jt+1)]['max_acceleration'])
-'''
+            rospy.sleep(3)
 
 def cmdhandler_client(type_arg, cmd_arg):
     rospy.wait_for_service(service)
@@ -255,3 +256,12 @@ def cmdhandler_client(type_arg, cmd_arg):
 def get_driver_state():
     ret = cmdhandler_client('driver', 'get_status')
     return ret
+
+def joint_limits(joint, pos, below, above):
+    joint_constraint = moveit_msgs.msg.JointConstraint()
+    joint_constraint.joint_name = joint
+    joint_constraint.position = pos * math.pi / 180
+    joint_constraint.tolerance_below = below * math.pi / 180
+    joint_constraint.tolerance_above = above * math.pi / 180
+    joint_constraint.weight = 1
+    return joint_constraint

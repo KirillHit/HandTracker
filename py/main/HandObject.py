@@ -50,9 +50,11 @@ class HandTracker:
 
     def give_Hand (self, Center, SizeFactor, PrecisionParam, Compress):
         Now = time.time_ns()
+        self.Compress = Compress
         # Проверка пропажи руки
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer*10**9:
             self.TrackingProcess = False
+            self.Compress = False
         self.PrevTime = Now
         # Калибровка размеров руки
         if not self.TrackingProcess:
@@ -116,6 +118,7 @@ class HandTracker:
         # Проверка пропажи руки
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer * 10 ** 9:
             self.TrackingProcess = False
+            self.Compress = False
 
         return {"Hand": self.Hand, "width": self.width, "height": self.height,
                 "CalibDist": self.CalibDist, "Compress": self.Compress}
