@@ -473,7 +473,8 @@ class Ui_MainWindow(object):
         self.change_cam()
 
     def RobotConnect(self):
-        self.RobotThread.RobotConnect(self.IpLineEdit.text())
+        port_host = self.IpLineEdit.text()
+        self.RobotThread.RobotConnect(port_host)
 
     def HandToRobot(self):
         if self.HandTracker.TrackingProcess:

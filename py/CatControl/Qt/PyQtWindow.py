@@ -430,7 +430,7 @@ class Ui_MainWindow(object):
         self.Hand_Coords.setText(_translate("MainWindow", "No hands"))
         self.label_9.setText(_translate("MainWindow", "Интерфейс робота"))
         self.label_12.setText(_translate("MainWindow", "Хост и порт:"))
-        self.IpLineEdit.setText(_translate("MainWindow", "192.168.0.10:48569"))
+        self.IpLineEdit.setText(_translate("MainWindow", "127.0.0.1:48569"))
         self.ConnectBut.setText(_translate("MainWindow", "Подключиться"))
         self.StartRobotBut.setText(_translate("MainWindow", "Начать управление"))
         self.PauseRobotBut.setText(_translate("MainWindow", "Остановить"))

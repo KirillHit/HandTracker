@@ -7,16 +7,17 @@ from RobotDataSender import RobotSender
 class RobotObject(QThread):
     GetHand = pyqtSignal()
     RobotMessage = pyqtSignal(str)
+    Sender = RobotSender()
 
     def __init__(self):
         super().__init__()
         self._run_flag = False
         self.Home_pose = [0, 0, 0.8]
         self.Hand = self.Home_pose
-        self.Sender = RobotSender
 
-    def RobotConnect(self, RobotPort):
-        self.Sender.setPortHost(RobotPort)
+    def RobotConnect(self, port_host):
+        self.Sender.set_host_port(port_host)
+        self.Sender.connect()
 
     def RobotStart(self):
         pass

@@ -4,12 +4,12 @@ import json
 
 class Settings:
     __HOST_STRING = 'host'
-    __PORT_STRING = 'port'
+    __PORT_INT = 'port'
     __TIMEOUT_STRING = 'timeout'
     __DEBUG_MODE_STRING = 'debug_mode'
     __SEPARATOR_STRING = 'separator'
 
-    def __init__(self, file_path):
+    def __init__(self, file_path='config/parameters.json'):
         self.__config_path = file_path
         self.__config_dir, self.__config_file = os.path.split(file_path)
         if os.path.exists(self.__config_path):
@@ -23,7 +23,7 @@ class Settings:
             with open(self.__config_path, 'r') as file:
                 config = json.load(file)
                 self.host = config[self.__HOST_STRING]
-                self.port = config[self.__PORT_STRING]
+                self.port = config[self.__PORT_INT]
                 self.timeout = config[self.__TIMEOUT_STRING]
                 self.debug_mode = config[self.__DEBUG_MODE_STRING]
                 self.separator = config[self.__SEPARATOR_STRING]
@@ -49,7 +49,7 @@ class Settings:
             config = {}
 
         config[self.__HOST_STRING] = self.host
-        config[self.__PORT_STRING] = self.port
+        config[self.__PORT_INT] = self.port
         config[self.__TIMEOUT_STRING] = self.timeout
         config[self.__DEBUG_MODE_STRING] = self.debug_mode
         config[self.__SEPARATOR_STRING] = self.separator

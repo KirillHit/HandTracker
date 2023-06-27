@@ -3,14 +3,11 @@ from config.SettingClass import Settings
 
 
 class RobotSender:
-    def __init__(self, config_path='config/parameters.json'):
-        self.settings = Settings(config_path)
+    def __init__(self):
+        self.settings = Settings()
 
         self.__data = ''
         self.is_connected = False
-
-        self.__connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__connection.settimeout(self.settings.timeout)
 
     def __print_debug(self, msg):
         if self.settings.debug_mode:
@@ -18,6 +15,10 @@ class RobotSender:
 
     def connect(self):
         try:
+            # prepiar socket
+            self.__connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.__connection.settimeout(self.settings.timeout)
+
             # start connection with server
             self.__connection.connect((self.settings.host, self.settings.port))
             self.is_connected = True
@@ -48,12 +49,12 @@ class RobotSender:
     def send_from_robot(self, x, y, z, compress):
         self.__send([x, y, z, compress])
 
-    def setPortHost(self, PortHost):
+    def set_host_port(self, host_port):
         if not self.is_connected:
-            print(PortHost[:":"], PortHost[":":])
-            self.settings.ip = PortHost[:":"]
-            self.settings.host = PortHost[":":]
+            self.settings.host = host_port.split(':')[0]
+            self.settings.port = int(host_port.split(':')[1])
             self.settings.save_settings()
+
 
 if __name__ == "__main__":
     print("Start sender mini program")
