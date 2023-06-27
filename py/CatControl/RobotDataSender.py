@@ -25,6 +25,8 @@ class RobotSender:
         except Exception as ex:
             self.__print_debug(f"Error has been handled: {ex}. Socket connection closing.")
             self.__connection.close()
+        finally:
+            return self.is_connected
 
     def disconnect(self):
         try:
