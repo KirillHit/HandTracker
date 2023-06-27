@@ -48,7 +48,7 @@ class HandTracker:
         return int(self.mapping(time, a, b, c))
     '''
 
-    def give_Hand (self, Center, SizeFactor, PrecisionParam, Compress):
+    def give_Hand (self, Center, SizeFactor, Compress):
         Now = time.time_ns()
         self.Compress = Compress
         # Проверка пропажи руки
@@ -58,7 +58,7 @@ class HandTracker:
         self.PrevTime = Now
         # Калибровка размеров руки
         if not self.TrackingProcess:
-            if (Center[0]**2 + Center[1]**2) <= (self.Radius*PrecisionParam)**2:
+            if (Center[0]**2 + Center[1]**2) <= self.Radius**2:
                 if self.StartTime == 0:
                     self.StartTime = Now
                     self.SaveSize = np.array([SizeFactor])
@@ -77,8 +77,8 @@ class HandTracker:
         # Отслеживание руки
         else:
             self.Real_z = int(self.CalibDist * self.SaveSize // SizeFactor)
-            self.Real_x = self.CalibCam * self.Real_z * Center[0] // (self.CalibDist * PrecisionParam * 100)
-            self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * PrecisionParam * 100)
+            self.Real_x = self.CalibCam * self.Real_z * Center[0] // (self.CalibDist * 100)
+            self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * 100)
 
             self.approx_z = np.append(self.approx_z, self.Real_z)
             self.approx_t = np.append(self.approx_t, Now)
@@ -111,7 +111,7 @@ class HandTracker:
             '''
 
             self.Hand = [self.Fixed_x, self.Fixed_y, self.Fixed_z]
-            return f"X:{self.Fixed_x}, Y:{self.Fixed_y}, Z:{self.Fixed_z}"
+            return f"X:{self.Fixed_x}, Y:{self.Fixed_y}, Z:{self.Fixed_z}\nСжать: {str(self.Compress)}"
 
     def get_Hand (self):
         Now = time.time_ns()

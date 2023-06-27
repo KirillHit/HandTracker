@@ -2,7 +2,7 @@ import socket
 from config.SettingClass import Settings
 
 
-class RobotDataSender:
+class RobotSender:
     def __init__(self, config_path='config/parameters.json'):
         self.settings = Settings(config_path)
 
@@ -48,11 +48,17 @@ class RobotDataSender:
     def send_from_robot(self, x, y, z, compress):
         self.__send([x, y, z, compress])
 
+    def setPortHost(self, PortHost):
+        if not self.is_connected:
+            print(PortHost[:":"], PortHost[":":])
+            self.settings.ip = PortHost[:":"]
+            self.settings.host = PortHost[":":]
+            self.settings.save_settings()
 
 if __name__ == "__main__":
     print("Start sender mini program")
 
-    robo = RobotDataSender()
+    robo = RobotSender()
     robo.connect()
 
     print("Wait for commands...")

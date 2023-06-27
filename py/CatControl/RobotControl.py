@@ -2,9 +2,7 @@
 
 from PyQt5.QtCore import QThread, pyqtSignal
 
-import socket
-import os
-import math
+from RobotDataSender import RobotSender
 
 class RobotObject(QThread):
     GetHand = pyqtSignal()
@@ -13,90 +11,38 @@ class RobotObject(QThread):
     def __init__(self):
         super().__init__()
         self._run_flag = False
-        self.Home_pose = [0.4, 0, 0.3]
-        self.HomePoseFlag = False
+        self.Home_pose = [0, 0, 0.8]
         self.Hand = self.Home_pose
+        self.Sender = RobotSender
 
-        self.Compress = False
-        self.CompressFlag = False
-
-        self.PrevHand = None
-        self.PrevCompress = None
-
-        self.max_cord = [0.8, 0.3, 0.6]
-        self.min_cord = [0.3, -0.3, 0]
-
-        self.ConnectFlag = False
-        self.InitFlag = False
-
-    def RobotConnect(self, RobotModel, SimulationFlag, RobotIp="192.168.0.2"):
-        pass
+    def RobotConnect(self, RobotPort):
+        self.Sender.setPortHost(RobotPort)
 
     def RobotStart(self):
-        if not self._run_flag and self.ConnectFlag:
-            self.PrevHand = None
-            self.PrevCompress = None
-            self.GoHome()
-
-            self._run_flag = True
-            self.start()
+        pass
 
     def run(self):
         # not rospy.is_shutdown():
         while self._run_flag:
             self.GetHand.emit()
+            self.msleep(10)
 
-
-            # Пропуск идентичных запросов
-            if self.HomePoseFlag:
-                if self.CurHomePoseFlag:
-                    continue
-                else:
-                    self.CurHomePoseFlag = True
-            elif self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
-                continue
-            elif self.CurHomePoseFlag:
-                self.CurHomePoseFlag = False
-
-            self.PrevCompress = self.Compress
-            self.PrevHand = self.Hand
-
-
-            if self.Compress and not self.CompressFlag:
-                self.CompressFlag = True
-                self.sleep(2)
-            elif not self.Compress and self.CompressFlag:
-                self.CompressFlag = False
-                self.sleep(2)
-
-    def SetHand(self, CamInfo, PrecisionParam):
-        x = ((self.max_cord[0] - self.min_cord[0]) / (CamInfo["height"] * PrecisionParam))\
-            * (CamInfo["height"] * PrecisionParam // 2 - CamInfo["Hand"][1]) + self.min_cord[0]
-        y = ((self.max_cord[1] - self.min_cord[1]) / (CamInfo["width"] * PrecisionParam)) * CamInfo["Hand"][0]
-        z = (CamInfo["CalibDist"] - CamInfo["Hand"][2]) / 1000 + self.Home_pose[2]
-        '''
-        x = CamInfo["height"]/100
-        y = CamInfo["Hand"][0]/100
-        z = (CamInfo["CalibDist"] - CamInfo["Hand"][2]) / 100 + self.Home_pose[2]
-        '''
+    def SetHand(self, CamInfo):
+        x = round((CamInfo["Hand"][1] + CamInfo["height"] / 2) / CamInfo["height"], 3)
+        y = round((CamInfo["Hand"][0] + CamInfo["width"] / 2) / CamInfo["width"], 3)
+        z = round((CamInfo["CalibDist"] - CamInfo["Hand"][2]) / CamInfo["CalibDist"] + self.Home_pose[2], 3)
 
         self.Hand = [x, y, z]
         self.Compress = CamInfo["Compress"]
 
         for i, cord in enumerate(self.Hand):
-            if cord > self.max_cord[i]:
-                self.Hand[i] = self.max_cord[i]
-            elif cord < self.min_cord[i]:
-                self.Hand[i] = self.min_cord[i]
-
-        if self.HomePoseFlag:
-            self.HomePoseFlag = False
+            if cord > 1:
+                self.Hand[i] = 1
+            elif cord < 0:
+                self.Hand[i] = 0
 
     def GoHome(self):
         self.Hand = self.Home_pose
-        self.Compress = False
-        self.HomePoseFlag = True
-        self.CurHomePoseFlag = False
 
     def stop(self):
         if self._run_flag:
