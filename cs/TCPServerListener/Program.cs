@@ -80,6 +80,11 @@
                 var currentClient = (TcpClient)ar.AsyncState;
 
                 var data = await ReadAsync(currentClient);
+                if (string.IsNullOrEmpty(data))
+                {
+                    return;
+                }
+
                 Log($"Received: {data}");
 
                 currentClient.Client.BeginReceive(dataBuffer, 0, 0, 0, new AsyncCallback(CallBack_DataReceived), currentClient);
