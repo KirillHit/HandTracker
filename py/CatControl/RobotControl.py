@@ -15,19 +15,31 @@ class RobotObject(QThread):
         self.Hand = self.Home_pose
         self.Sender = RobotSender()
 
+        self.ConnectFlag = False
+
     def RobotConnect(self, port_host):
         self.Sender.set_host_port(port_host)
-        self.Sender.connect()
+        if self.Sender.connect():
+            self.ConnectFlag = True
+            self.Compress = False
+            self.Hand = self.Home_pose
+            self.PrevHand = None
+            self.PrevCompress = None
+            self.RobotMessage.emit("Подключение установленно!")
+        else:
+            self.RobotMessage.emit("Подключение не было установленно.")
 
-        self.Compress = False
-        self.CompressFlag = False
+        '''
+        if self.Sender.CheckConnect():
+            self.ConnectFlag = True
+            self.RobotMessage.emit("Соединение выполнено")
 
-        self.PrevHand = None
-        self.PrevCompress = None
-
+            self.PrevHand = None
+            self.PrevCompress = None
+        '''
 
     def RobotStart(self):
-        if not self._run_flag:
+        if not self._run_flag and self.ConnectFlag:
             self._run_flag = True
             self.start()
 
@@ -43,27 +55,16 @@ class RobotObject(QThread):
             self.msleep(10)
 
             if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
-                # rospy.loginfo("Continue")
                 continue
-            elif self.CurHomePoseFlag:
-                self.CurHomePoseFlag = False
-
             self.PrevCompress = self.Compress
             self.PrevHand = self.Hand
 
-            self.mgc.set_start_state(self.rc.get_current_state())
-
-            if self.Compress and not self.CompressFlag:
-                cmdhandler_client("as", "CLOSE")
-                self.CompressFlag = True
-                self.mgc.stop()
-                self.sleep(2)
-            elif not self.Compress and self.CompressFlag:
-                cmdhandler_client("as", "OPEN")
-                self.CompressFlag = False
-                self.mgc.stop()
-                self.sleep(2)
-
+            try:
+                self.Sender.send_formatted_from_robot(*self.Hand, self.Compress)
+            except Exception as e:
+                self.RobotMessage.emit(str(e))
+                self.ConnectFlag = False
+                self.stop()
 
     def SetHand(self, CamInfo):
         x = round((CamInfo["Hand"][1] + CamInfo["height"] / 2) / CamInfo["height"], 3)
