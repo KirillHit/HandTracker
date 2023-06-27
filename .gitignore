@@ -36,6 +36,9 @@ x64/
 obj/
 bin/
 
+# Vlad 
+py/CatControl/venv.rar
+
 # Ignore old
 mediapipe/
 ros_resources/
