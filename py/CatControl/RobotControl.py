@@ -29,24 +29,17 @@ class RobotObject(QThread):
         else:
             self.RobotMessage.emit("Подключение не было установленно.")
 
-        '''
-        if self.Sender.CheckConnect():
-            self.ConnectFlag = True
-            self.RobotMessage.emit("Соединение выполнено")
-
-            self.PrevHand = None
-            self.PrevCompress = None
-        '''
-
     def RobotStart(self):
         if not self._run_flag and self.ConnectFlag:
             self._run_flag = True
             self.start()
+            self.RobotMessage.emit("Управление активно!")
 
     def stop(self):
         if self._run_flag:
             self._run_flag = False
             self.wait()
+            self.RobotMessage.emit("Управление приостановлено.")
 
     def run(self):
         # not rospy.is_shutdown():
