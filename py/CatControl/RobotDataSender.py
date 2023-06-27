@@ -46,8 +46,8 @@ class RobotSender:
         self.__connection.sendall(self.__data.encode())
         __data = ''
 
-    def send_from_robot(self, x, y, z, compress):
-        self.__send([x, y, z, compress])
+    def send_from_robot(self, xyz, compress):
+        self.__send([xyz, compress])
 
     def set_host_port(self, host_port):
         if not self.is_connected:
