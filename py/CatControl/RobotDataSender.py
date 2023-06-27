@@ -53,9 +53,9 @@ class RobotSender:
 
     def send_formatted_from_robot(self, x, y, z, compress):
         self.__send([
-            "{:10.3f}".format(x),
-            "{:10.3f}".format(y),
-            "{:10.3f}".format(z),
+            "{:5.3f}".format(x),
+            "{:5.3f}".format(y),
+            "{:5.3f}".format(z),
             compress
         ])
 
