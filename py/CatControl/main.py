@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import QMessageBox
 import HandObject
 import RobotControl
 from CameraAnalysis import VideoThread
-from config.SettingClass import Settings
+# from config.SettingClass import Settings
 
 # pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
 
@@ -427,8 +427,10 @@ class Ui_MainWindow(object):
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
         # Ip по умолчанию
-        settings = Settings('config/parameters.json')
-        self.IpLineEdit.setText(f"{settings.port}:{settings.host}")
+        HostP = self.RobotThread.Sender.get_Host()
+        # settings = Settings('config/parameters.json')
+        # self.IpLineEdit.setText(f"{settings.port}:{settings.host}")
+        self.IpLineEdit.setText(HostP)
 
         # Настройка полей и ползунков
         # region
@@ -481,6 +483,8 @@ class Ui_MainWindow(object):
             CamInfo = self.HandTracker.get_Hand()
             if self.HandExist:
                 self.RobotThread.SetHand(CamInfo)
+        else:
+            self.RobotThread.GoHome()
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
@@ -566,7 +570,6 @@ class Ui_MainWindow(object):
         self.Hand_Coords.setText(_translate("MainWindow", "No hands"))
         self.label_9.setText(_translate("MainWindow", "Интерфейс робота"))
         self.label_12.setText(_translate("MainWindow", "Хост и порт:"))
-        self.IpLineEdit.setText(_translate("MainWindow", "192.168.0.10:48569"))
         self.ConnectBut.setText(_translate("MainWindow", "Подключиться"))
         self.StartRobotBut.setText(_translate("MainWindow", "Начать управление"))
         self.PauseRobotBut.setText(_translate("MainWindow", "Остановить"))

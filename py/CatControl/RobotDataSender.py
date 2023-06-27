@@ -55,6 +55,8 @@ class RobotSender:
             self.settings.port = int(host_port.split(':')[1])
             self.settings.save_settings()
 
+    def get_Host(self):
+        return f"{self.settings.host}:{self.settings.port}"
 
 if __name__ == "__main__":
     print("Start sender mini program")
