@@ -51,6 +51,14 @@ class RobotSender:
     def send_from_robot(self, x, y, z, compress):
         self.__send([x, y, z, compress])
 
+    def send_formatted_from_robot(self, x, y, z, compress):
+        self.__send([
+            "{:10.3f}".format(x),
+            "{:10.3f}".format(y),
+            "{:10.3f}".format(z),
+            compress
+        ])
+
     def set_host_port(self, host_port):
         if not self.is_connected:
             self.settings.host = host_port.split(':')[0]
