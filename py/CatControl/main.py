@@ -15,9 +15,7 @@ from PyQt5.QtWidgets import QMessageBox
 import HandObject
 import RobotControl
 
-
 # pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
-
 class VideoThread(QThread):
     change_pixmap_signal = pyqtSignal(np.ndarray)
     Cam_error_signal = pyqtSignal(int)
