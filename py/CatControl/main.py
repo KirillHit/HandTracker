@@ -476,7 +476,10 @@ class Ui_MainWindow(object):
 
     def RobotConnect(self):
         port_host = self.IpLineEdit.text()
-        self.RobotThread.RobotConnect(port_host)
+        if port_host.count(":"):
+            self.RobotThread.RobotConnect(port_host)
+        else:
+            self.showDialog("Введены некорректные данные.")
 
     def HandToRobot(self):
         if self.HandTracker.TrackingProcess:

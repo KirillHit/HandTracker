@@ -20,6 +20,7 @@ class RobotObject(QThread):
     def RobotConnect(self, port_host):
         self.Sender.set_host_port(port_host)
         if self.Sender.connect():
+            self.Sender.settings.save_settings()
             self.ConnectFlag = True
             self.Compress = False
             self.Hand = self.Home_pose

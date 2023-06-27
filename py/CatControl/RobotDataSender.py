@@ -63,7 +63,7 @@ class RobotSender:
         if not self.is_connected:
             self.settings.host = host_port.split(':')[0]
             self.settings.port = int(host_port.split(':')[1])
-            self.settings.save_settings()
+            # self.settings.save_settings()
 
     def get_Host(self):
         return f"{self.settings.host}:{self.settings.port}"
