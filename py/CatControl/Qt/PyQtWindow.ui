@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>HandTracker</string>
+   <string>CatControl</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_6">
@@ -300,13 +300,13 @@
               <item row="0" column="1">
                <widget class="QSlider" name="CalibCam">
                 <property name="maximum">
-                 <number>500</number>
+                 <number>300</number>
                 </property>
                 <property name="pageStep">
                  <number>1</number>
                 </property>
                 <property name="value">
-                 <number>80</number>
+                 <number>100</number>
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
@@ -598,7 +598,7 @@ color: rgb(0, 170, 0);</string>
                  <set>Qt::ImhNone</set>
                 </property>
                 <property name="text">
-                 <string>192.168.0.10:48569</string>
+                 <string/>
                 </property>
                </widget>
               </item>

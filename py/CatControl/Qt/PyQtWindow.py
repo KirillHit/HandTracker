@@ -164,9 +164,9 @@ class Ui_MainWindow(object):
         self.TimeApprox.setObjectName("TimeApprox")
         self.gridLayout_4.addWidget(self.TimeApprox, 2, 1, 1, 1)
         self.CalibCam = QtWidgets.QSlider(self.frame)
-        self.CalibCam.setMaximum(500)
+        self.CalibCam.setMaximum(300)
         self.CalibCam.setPageStep(1)
-        self.CalibCam.setProperty("value", 80)
+        self.CalibCam.setProperty("value", 100)
         self.CalibCam.setOrientation(QtCore.Qt.Horizontal)
         self.CalibCam.setObjectName("CalibCam")
         self.gridLayout_4.addWidget(self.CalibCam, 0, 1, 1, 1)
@@ -408,7 +408,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "HandTracker"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "CatControl"))
         self.label_10.setText(_translate("MainWindow", "Интерфейс управления камерой"))
         self.Start_cam.setText(_translate("MainWindow", "Обновить"))
         self.label.setText(_translate("MainWindow", "Номер камеры:"))
@@ -430,7 +430,7 @@ class Ui_MainWindow(object):
         self.Hand_Coords.setText(_translate("MainWindow", "No hands"))
         self.label_9.setText(_translate("MainWindow", "Интерфейс робота"))
         self.label_12.setText(_translate("MainWindow", "Хост и порт:"))
-        self.IpLineEdit.setText(_translate("MainWindow", "127.0.0.1:48569"))
+        self.IpLineEdit.setText(_translate("MainWindow", "192.168.0.10:48569"))
         self.ConnectBut.setText(_translate("MainWindow", "Подключиться"))
         self.StartRobotBut.setText(_translate("MainWindow", "Начать управление"))
         self.PauseRobotBut.setText(_translate("MainWindow", "Остановить"))
