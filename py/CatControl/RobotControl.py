@@ -42,7 +42,8 @@ class RobotObject(QThread):
             self.start()
 
     def run(self):
-        while self._run_flag and not rospy.is_shutdown():
+        # not rospy.is_shutdown():
+        while self._run_flag:
             self.GetHand.emit()
 
 

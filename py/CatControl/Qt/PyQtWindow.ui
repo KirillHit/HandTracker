@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>609</height>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -564,99 +564,11 @@ color: rgb(0, 170, 0);</string>
              </widget>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_7">
-              <item>
-               <widget class="QComboBox" name="ModelRobot">
-                <item>
-                 <property name="text">
-                  <string>rs007l</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>rs007n</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>rs013n</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>rs020n</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>rs025n</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>rs080n</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_16">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="Line" name="line_3">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_8">
-              <item>
-               <widget class="QLabel" name="label_17">
-                <property name="text">
-                 <string>Симуляция:</string>
-                </property>
-                <property name="margin">
-                 <number>5</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="SimulationCheckBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="tristate">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <widget class="QLabel" name="label_12">
                 <property name="text">
-                 <string>IP адрес робота:</string>
+                 <string>Хост и порт:</string>
                 </property>
                 <property name="margin">
                  <number>5</number>
@@ -686,7 +598,7 @@ color: rgb(0, 170, 0);</string>
                  <set>Qt::ImhNone</set>
                 </property>
                 <property name="text">
-                 <string>196.001.1.1</string>
+                 <string>192.168.0.10:48569</string>
                 </property>
                </widget>
               </item>
@@ -895,22 +807,5 @@ color: rgb(0, 170, 0);</string>
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>SimulationCheckBox</sender>
-   <signal>stateChanged(int)</signal>
-   <receiver>IpLineEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>256</x>
-     <y>456</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>222</x>
-     <y>489</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
