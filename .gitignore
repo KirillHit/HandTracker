@@ -32,7 +32,7 @@
 *.app
 
 # IDE Folders
-# .idea/
+.idea/
 .build/
 
 # PyCharm
