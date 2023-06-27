@@ -25,9 +25,7 @@
 
 # PyCharm
 __pycache__/
-
-# Ignore from Vlad
-cs/
+venv/
 
 # Visual Studio
 .vs/
@@ -35,9 +33,11 @@ packages/
 x64/
 *.user
 *.filters
-mediapipe/
-ros_resources/
+obj/
+bin/
 
 # Ignore old
+mediapipe/
+ros_resources/
 cpp/
 py/arc/
