@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>614</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -281,22 +281,6 @@
               <property name="verticalSpacing">
                <number>10</number>
               </property>
-              <item row="2" column="1">
-               <widget class="QSlider" name="TimeApprox">
-                <property name="maximum">
-                 <number>2000</number>
-                </property>
-                <property name="pageStep">
-                 <number>1</number>
-                </property>
-                <property name="value">
-                 <number>500</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
               <item row="0" column="1">
                <widget class="QSlider" name="CalibCam">
                 <property name="maximum">
@@ -313,8 +297,40 @@
                 </property>
                </widget>
               </item>
+              <item row="2" column="1">
+               <widget class="QSlider" name="TimeApprox">
+                <property name="maximum">
+                 <number>2000</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>500</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
               <item row="2" column="2">
                <widget class="QLabel" name="Lab_TimeApprox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="text">
+                 <string>0</string>
+                </property>
+                <property name="margin">
+                 <number>3</number>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="Lab_CamAngle">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -352,8 +368,8 @@
                 </property>
                </widget>
               </item>
-              <item row="1" column="2">
-               <widget class="QLabel" name="Lab_CamAngle">
+              <item row="3" column="2">
+               <widget class="QLabel" name="Lab_FixedParam">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -368,8 +384,8 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="2">
-               <widget class="QLabel" name="Lab_FixedParam">
+              <item row="4" column="2">
+               <widget class="QLabel" name="Lab_FixedParam_Z">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -391,36 +407,6 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="label_6">
-                <property name="text">
-                 <string>Время усреднения (мс)</string>
-                </property>
-               </widget>
-              </item>
-              <item row="4" column="2">
-               <widget class="QLabel" name="Lab_FixedParam_Z">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>0</string>
-                </property>
-                <property name="margin">
-                 <number>3</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>Порог движения</string>
-                </property>
-               </widget>
-              </item>
               <item row="1" column="1">
                <widget class="QSlider" name="CamAngle">
                 <property name="maximum">
@@ -434,6 +420,43 @@
                 </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Время усреднения (мс)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Порог движения</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QSlider" name="FixedParam_Z">
+                <property name="maximum">
+                 <number>20</number>
+                </property>
+                <property name="pageStep">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>4</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="lab">
+                <property name="text">
+                 <string>Эквивалент камеры</string>
                 </property>
                </widget>
               </item>
@@ -459,26 +482,23 @@
                 </property>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="lab">
+              <item row="5" column="0">
+               <widget class="QLabel" name="label_16">
                 <property name="text">
-                 <string>Эквивалент камеры</string>
+                 <string>Залипание сжатия</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
-               <widget class="QSlider" name="FixedParam_Z">
-                <property name="maximum">
-                 <number>20</number>
+              <item row="5" column="1">
+               <widget class="QCheckBox" name="CompressBox">
+                <property name="text">
+                 <string/>
                 </property>
-                <property name="pageStep">
-                 <number>1</number>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
-                <property name="value">
-                 <number>4</number>
-                </property>
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                <property name="tristate">
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -603,6 +623,25 @@ color: rgb(0, 170, 0);</string>
                </widget>
               </item>
               <item>
+               <widget class="QPushButton" name="ConnectBut">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>105</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Подключиться</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="label_14">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -618,30 +657,40 @@ color: rgb(0, 170, 0);</string>
              </layout>
             </item>
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,10,2">
+              <property name="spacing">
+               <number>10</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
               <item>
-               <widget class="QPushButton" name="ConnectBut">
-                <property name="minimumSize">
-                 <size>
-                  <width>140</width>
-                  <height>0</height>
-                 </size>
-                </property>
+               <widget class="QLabel" name="label_15">
                 <property name="text">
-                 <string>Подключиться</string>
+                 <string>Частота обновления</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_21">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
+               <widget class="QSlider" name="UpdateTime">
+                <property name="minimum">
+                 <number>1</number>
                 </property>
+                <property name="maximum">
+                 <number>30</number>
+                </property>
+                <property name="value">
+                 <number>30</number>
+                </property>
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="Lab_UpdateTime">
                 <property name="text">
-                 <string/>
+                 <string>0</string>
                 </property>
                </widget>
               </item>
@@ -688,7 +737,7 @@ color: rgb(0, 170, 0);</string>
             <item>
              <widget class="QFrame" name="horizontalFrame">
               <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
@@ -707,8 +756,57 @@ color: rgb(0, 170, 0);</string>
                 <number>0</number>
                </property>
                <property name="bottomMargin">
-                <number>0</number>
+                <number>5</number>
                </property>
+               <item>
+                <widget class="QListWidget" name="SendList">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="verticalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAsNeeded</enum>
+                 </property>
+                 <property name="horizontalScrollBarPolicy">
+                  <enum>Qt::ScrollBarAsNeeded</enum>
+                 </property>
+                 <property name="autoScrollMargin">
+                  <number>16</number>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="showDropIndicator" stdset="0">
+                  <bool>true</bool>
+                 </property>
+                 <property name="movement">
+                  <enum>QListView::Static</enum>
+                 </property>
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="modelColumn">
+                  <number>0</number>
+                 </property>
+                 <property name="uniformItemSizes">
+                  <bool>false</bool>
+                 </property>
+                 <property name="batchSize">
+                  <number>100</number>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                 <property name="selectionRectVisible">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>

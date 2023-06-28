@@ -4,16 +4,19 @@ from PyQt5.QtCore import QThread, pyqtSignal
 
 from RobotDataSender import RobotSender
 
+
 class RobotObject(QThread):
     GetHand = pyqtSignal()
     RobotMessage = pyqtSignal(str)
+    SendListUpdate = pyqtSignal(str)
 
     def __init__(self):
         super().__init__()
         self._run_flag = False
-        self.Home_pose = [0, 0, 0.8]
+        self.Home_pose = [0, 0.5, 0.8]
         self.Hand = self.Home_pose
         self.Sender = RobotSender()
+        self.sleep_time = 30
 
         self.ConnectFlag = False
 
@@ -26,27 +29,28 @@ class RobotObject(QThread):
             self.Hand = self.Home_pose
             self.PrevHand = None
             self.PrevCompress = None
-            self.RobotMessage.emit("Подключение установленно!")
+            self.SendListUpdate.emit("Подключение установленно!")
         else:
-            self.RobotMessage.emit("Подключение не было установленно.")
+            self.SendListUpdate.emit("Подключение не было установленно.")
 
     def RobotStart(self):
         if not self._run_flag and self.ConnectFlag:
+            self.Hand = self.Home_pose
             self._run_flag = True
             self.start()
-            self.RobotMessage.emit("Управление активно!")
+            self.SendListUpdate.emit("Управление активно!")
 
     def stop(self):
         if self._run_flag:
             self._run_flag = False
             self.wait()
-            self.RobotMessage.emit("Управление приостановлено.")
+            self.SendListUpdate.emit("Управление приостановлено.")
 
     def run(self):
         # not rospy.is_shutdown():
         while self._run_flag:
             self.GetHand.emit()
-            self.msleep(10)
+            self.msleep(self.sleep_time)
 
             if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
                 continue
@@ -55,8 +59,9 @@ class RobotObject(QThread):
 
             try:
                 self.Sender.send_formatted_from_robot(*self.Hand, self.Compress)
+                self.SendListUpdate.emit("Sent: " + ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};")
             except Exception as e:
-                self.RobotMessage.emit(str(e))
+                self.RobotMessage.emit("Соединение разорвано:\n" + str(e))
                 self.ConnectFlag = False
                 self.stop()
 

@@ -114,7 +114,7 @@ class VideoThread(QThread):
                             # Записываем углы для каждого пальца
                             angles.append(angle)
 
-                        # Получение среднеарифметическое всех углов
+                        # Получение среднеарифметическое всех углов * 2.6
                         avgAngle = np.average(angles) < 2.6
 
                         cv2.putText(image, f"SizeFactor: {SizeFactor}", (5, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6,

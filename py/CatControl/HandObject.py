@@ -7,6 +7,7 @@ class HandTracker:
     def __init__(self):
         self.SaveSize = None
         self.TrackingProcess = False
+        self.ApproxCompress = False
 
         self.height = 1
         self.width = 1
@@ -15,11 +16,14 @@ class HandTracker:
         self.CalibCam = 83
         self.CamAngle = 90 * 3.14 / 180
 
+        self.CompressTime = 0
+
         self.StartTime = 0
         self.PrevTime = 0
         self.CalibTimer = 1
         self.LostHandTimer = 2
 
+        self.CompressTimeApprox = 1000 # В миллисекундах
         self.TimeApprox = 500 # В миллисекундах
         self.LenApprox = 60 * self.TimeApprox // 1000
         self.approx_x = np.zeros(self.LenApprox, dtype=np.int16)
@@ -50,7 +54,6 @@ class HandTracker:
 
     def give_Hand (self, Center, SizeFactor, Compress):
         Now = time.time_ns()
-        self.Compress = Compress
         # Проверка пропажи руки
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer*10**9:
             self.TrackingProcess = False
@@ -73,9 +76,18 @@ class HandTracker:
 
             else:
                 self.StartTime = 0
+                self.CompressTime = 0
             return "Calibration"
         # Отслеживание руки
         else:
+            if self.ApproxCompress:
+                if self.Compress != Compress and (Now - self.CompressTime) > self.CompressTimeApprox * 10 ** 6:
+                    self.Compress = Compress
+                    self.CompressTime = Now
+            else:
+                self.Compress = Compress
+
+
             self.Real_z = int(self.CalibDist * self.SaveSize // SizeFactor)
             self.Real_x = self.CalibCam * self.Real_z * Center[0] // (self.CalibDist * 100)
             self.Real_y = self.CalibCam * self.Real_z * Center[1] // (self.CalibDist * 100)
