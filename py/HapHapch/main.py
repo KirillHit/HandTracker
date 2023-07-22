@@ -5,26 +5,23 @@ import sys
 
 import cv2
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import QMessageBox
 
 import HandObject
-import RobotControl
+import Robot
 from CameraAnalysis import VideoThread
 from Qt.PyQtWindow import Ui_MainWindow
 from SettingClass import Settings
-
-
-# from config.SettingClass import Settings
 
 # pyuic5 -x PyQtWindow.ui -o PyQtWindow.py
 
 class RobotWindow(Ui_MainWindow):
     def __init__(self):
         self.CameraThread = VideoThread()
-        self.RobotThread = RobotControl.RobotObject()
+        self.RobotThread = Robot.Robot()
         self.HandTracker = HandObject.HandTracker()
         self.Settings = Settings()
         self.HandExist = False
@@ -40,14 +37,6 @@ class RobotWindow(Ui_MainWindow):
         # self.Lab_Cam.setScaledContents(True)
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
-
-        '''
-        # Ip по умолчанию
-        HostP = self.RobotThread.Sender.get_Host()
-        # settings = Settings('config/parameters.json')
-        # self.IpLineEdit.setText(f"{settings.port}:{settings.host}")
-        self.IpLineEdit.setText(HostP)
-        '''
 
         # Настройка полей и ползунков
         # region
@@ -75,14 +64,14 @@ class RobotWindow(Ui_MainWindow):
         self.TimeoutSlender.valueChanged.connect(self.change_cam)
 
         self.Start_cam.clicked.connect(self.new_Cam)
-        self.StartServerBut.clicked.connect(self.RobotConnect)
-        self.StartRobotBut.clicked.connect(self.RobotThread.RobotStart)
+        self.StartServerBut.clicked.connect(self.StartServer)
+        self.StartRobotBut.clicked.connect(self.RobotThread.start)
         self.PauseRobotBut.clicked.connect(self.RobotThread.stop)
 
         # Settings Button
         self.SaveSettingsBut.clicked.connect(self.SaveSettings)
         self.LoadSettingsBut.clicked.connect(self.LoadSettings)
-        self.ResetSettingsBut.clicked.connect(self.ResetSettings)
+        self.ResetSettingsBut.clicked.connect(lambda: self.LoadSettings(defaults=True))
 
         # connect its signal to the update_image slot
         self.CameraThread.change_pixmap_signal.connect(self.update_image)
@@ -100,18 +89,34 @@ class RobotWindow(Ui_MainWindow):
 
         self.LoadSettings()
 
-    def LoadSettings(self):
-        Settings = self.Settings.get_settings()
-        print(Settings)
+    def LoadSettings(self, defaults=False):
+        if defaults:
+            Settings = self.Settings.get_defaults_settings()
+        else:
+            Settings = self.Settings.get_settings()
 
-    def ResetSettings(self):
-        Settings = self.Settings.get_defaults_settings()
-        print(Settings)
+        try:
+            self.CalibDist.setText(Settings["CalibDist"])
+            self.CalibCam.setValue(Settings["CalibCam"])
+            self.TimeApprox.setValue(Settings["TimeApprox"])
+            self.FixedParam.setValue(Settings["FixedParam"])
+            self.FixedParam_Z.setValue(Settings["FixedParam_Z"])
+            self.IpLineEdit.setText(f"{Settings['host']}:{Settings['port']}")
+            self.TimeoutSlender.setValue(Settings["timeout"])
+        except Exception as e:
+            print("Not found:" + str(e))
+            self.Settings.save_settings(self.Settings.get_defaults_settings())
 
     def SaveSettings(self):
-        Settings = {"host": '',
-                    "port": 48569,
-                    "timeout": 5}
+        Settings = {"CalibDist": self.CalibDist.text(),
+                    "CalibCam": self.CalibCam.value(),
+                    "TimeApprox": self.TimeApprox.value(),
+                    "FixedParam": self.FixedParam.value(),
+                    "FixedParam_Z": self.FixedParam_Z.value(),
+                    "host": self.IpLineEdit.text().split(':')[0],
+                    "port": self.IpLineEdit.text().split(':')[1],
+                    "timeout": self.TimeoutSlender.value()}
+
         self.Settings.save_settings(Settings)
 
     def UpdateItem(self, Item):
@@ -120,27 +125,31 @@ class RobotWindow(Ui_MainWindow):
         self.SendList.addItem(Item)
         self.SendList.scrollToBottom()
 
-    def RobotConnect(self):
+    def StartServer(self):
         port_host = self.IpLineEdit.text()
-        if port_host.count(":"):
-            self.RobotThread.RobotConnect(port_host)
-        else:
-            self.showDialog("Введены некорректные данные.")
+        try:
+            port = port_host.split(':')[0]
+            host = port_host.split(':')[1]
+        except Exception:
+            self.showDialog("Некорректный адрес: " + port_host)
+            return
+        timeout = self.TimeoutSlender.value()
+        self.RobotThread.start_server(port, host, timeout)
 
     def HandToRobot(self):
         if self.HandTracker.TrackingProcess:
             CamInfo = self.HandTracker.get_Hand()
             if self.HandExist:
                 self.RobotThread.SetHand(CamInfo)
-        else:
-            self.RobotThread.GoHome()
+        # else:
+            # self.RobotThread.GoHome()
 
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
             self.CameraThread.set_cam(int(self.NumCamEditLine.text()))
             self.HandTracker.width = self.CameraThread.width
             self.HandTracker.height = self.CameraThread.height
-            self.RobotThread.GoHome()
+            # self.RobotThread.GoHome()
         else:
             self.showDialog("Введите число большее и равное нулю")
 
@@ -197,9 +206,6 @@ class RobotWindow(Ui_MainWindow):
         msgBox.setText(text)
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
-
-    def retranslateUi(self, MainWindow):
-        super().retranslateUi(MainWindow)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

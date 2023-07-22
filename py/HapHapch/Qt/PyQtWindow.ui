@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>1200</width>
-    <height>600</height>
+    <height>660</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,6 +18,21 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_6">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>10</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>10</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <item row="0" column="0">
      <widget class="QFrame" name="verticalFrame">
       <property name="frameShape">
@@ -612,8 +627,14 @@ color: rgb(0, 170, 0);</string>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
                <widget class="QLabel" name="label_12">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="text">
-                 <string>Хост и порт:</string>
+                 <string>Адрес:</string>
                 </property>
                 <property name="margin">
                  <number>5</number>
@@ -622,15 +643,21 @@ color: rgb(0, 170, 0);</string>
               </item>
               <item>
                <widget class="QLineEdit" name="IpLineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
-                  <width>140</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>140</width>
+                  <width>16777215</width>
                   <height>16777215</height>
                  </size>
                 </property>
@@ -647,17 +674,21 @@ color: rgb(0, 170, 0);</string>
                 </property>
                </widget>
               </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
                <widget class="QPushButton" name="StartServerBut">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>105</width>
+                  <width>0</width>
                   <height>0</height>
                  </size>
                 </property>
@@ -667,15 +698,15 @@ color: rgb(0, 170, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_14">
+               <widget class="QPushButton" name="PauseRobotBut">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string>Остановить</string>
                 </property>
                </widget>
               </item>
@@ -738,13 +769,6 @@ color: rgb(0, 170, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="PauseRobotBut">
-                <property name="text">
-                 <string>Остановить</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QLabel" name="label_19">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
@@ -790,6 +814,12 @@ color: rgb(0, 170, 0);</string>
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>40</height>
+                  </size>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>

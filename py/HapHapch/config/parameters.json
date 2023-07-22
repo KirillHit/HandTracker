@@ -1,1 +1,1 @@
-{"host": "", "port": 48569, "timeout": 5}
+{"host": "192.168.0.15", "port": "48569", "timeout": 5, "CalibDist": "500", "CalibCam": 100, "TimeApprox": 500, "FixedParam": 3, "FixedParam_Z": 4}

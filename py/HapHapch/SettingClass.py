@@ -6,9 +6,14 @@ class Settings:
     def __init__(self, file_path='config/parameters.json'):
         self.__config_path = file_path
         self.__config_dir, self.__config_file = os.path.split(file_path)
-        self.DefaultsSetting = {"host": '',
-                                "port": 48569,
-                                "timeout": 5}
+        self.DefaultsSetting = {"host": "192.168.0.15",
+                                "port": "48569",
+                                "timeout": 5,
+                                "CalibDist": "500",
+                                "CalibCam": 100,
+                                "TimeApprox": 500,
+                                "FixedParam": 3,
+                                "FixedParam_Z": 4}
 
     def __load_settings(self):
         if os.path.exists(self.__config_path):
