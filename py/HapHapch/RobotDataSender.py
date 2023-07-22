@@ -1,5 +1,5 @@
 import socket
-from config.SettingClass import Settings
+from SettingClass import Settings
 
 
 class RobotSender:

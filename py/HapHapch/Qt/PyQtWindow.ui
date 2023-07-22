@@ -505,6 +505,31 @@
              </layout>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QPushButton" name="SaveSettingsBut">
+                <property name="text">
+                 <string>Сохранить</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="LoadSettingsBut">
+                <property name="text">
+                 <string>Загрузить</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="ResetSettingsBut">
+                <property name="text">
+                 <string>Сбросить</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <widget class="Line" name="line_2">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -623,7 +648,7 @@ color: rgb(0, 170, 0);</string>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="ConnectBut">
+               <widget class="QPushButton" name="StartServerBut">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -637,7 +662,7 @@ color: rgb(0, 170, 0);</string>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Подключиться</string>
+                 <string>Запустить</string>
                 </property>
                </widget>
               </item>
@@ -667,12 +692,12 @@ color: rgb(0, 170, 0);</string>
               <item>
                <widget class="QLabel" name="label_15">
                 <property name="text">
-                 <string>Частота обновления</string>
+                 <string>Таймаут</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QSlider" name="UpdateTime">
+               <widget class="QSlider" name="TimeoutSlender">
                 <property name="minimum">
                  <number>1</number>
                 </property>
