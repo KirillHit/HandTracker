@@ -1,5 +1,5 @@
-import socket as sockets
-from PyQt5.QtCore import QThread, pyqtSignal
+import socket
+from PyQt5.QtCore import QThread, pyqtSignal, QTime, Qt
 
 
 class Robot(QThread):
@@ -13,17 +13,18 @@ class Robot(QThread):
         self._run_flag = False
         self.is_connected = False
 
-        self.sent_percentage = 0
-        self.drawn_percentage = 0
-        self.stop_required = False
-
         self.host = ''
         self.port = 48569
-        self.timeout = 0
+        self.timeout = 5
         self.debug_mode = True
         self.separator = ';'
 
-        self.socket = sockets.socket(sockets.AF_INET, sockets.SOCK_STREAM)
+        self.Home_pose = [0, 0.5, 0.8]
+        self.Compress = False
+        self.Hand = self.Home_pose
+        self.sleep_time = 30
+
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def __print_debug(self, msg):
         if self.debug_mode:
@@ -31,77 +32,39 @@ class Robot(QThread):
 
     def __connect(self):
         self.SendListUpdate.emit("Server started. Waiting for connect...")
-        self.socket = sockets.socket(sockets.AF_INET, sockets.SOCK_STREAM)
-        self.socket.bind((self.host, int(self.port)))
-        self.socket.listen()
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((self.host, int(self.port)))
+        self.server.listen()
         try:
-            self.__connection, ip_address = self.socket.accept()
+            self.__connection, ip_address = self.server.accept()
             self.__connection.settimeout(self.timeout)
             self.SendListUpdate.emit(f"Client with IP {ip_address} was connected")
             self.is_connected = True
         except Exception as e:
             pass
 
-    def __send(self):
-        self.stop_required = False
-        _array = []
-        for i in range(0, len(self.__data), 15):
-            package = ['contour']
-            for j in range(15):
-                try:
-                    package.append(self.__data[i + j][0])
-                    package.append(self.__data[i + j][1])
-                    package.append(self.__data[i + j][2])
-                except IndexError:
-                    pass
-            _data = self.__prepare_sending_data(package)
-            _array.append(_data)
-        data_length = len(_array)
-        _data = self.__prepare_sending_data(['start', data_length])
-        self.__connection.sendall(_data)
-        received_data = self.__connection.recv(1024)
-        while received_data != b'start_accepted':
-            print(received_data)
-            received_data = self.__connection.recv(1024)
-        l = 1
-        for element in _array:
-            self.__connection.sendall(element)
-            received_data = self.__connection.recv(1024)
-            print(received_data)
-            self.drawn_percentage = float(received_data.decode())
-            self.sent_percentage = l * 100 / data_length
-            l = l + 1
-            if self.stop_required:
-                self.__connection.sendall(b'stop;')
-                received_data = self.__connection.recv(1024)
-                self.drawn_percentage = float(received_data.decode())
-                self.stop_required = False
-                break
-        while self.drawn_percentage != 100:
-            self.__connection.sendall(b'heartbeat;')
-            received_data = self.__connection.recv(1024)
-            self.drawn_percentage = float(received_data.decode())
-            if self.stop_required:
-                self.__connection.sendall(b'stop;')
-                received_data = self.__connection.recv(1024)
-                self.drawn_percentage = float(received_data.decode())
-                self.stop_required = False
-                break
-
     def run(self):
-        wait = lambda: self.__connection.sendall(b'heartbeat;')
-        self.__data = ""
+        real_time = QTime()
+        time = QTime()
+        time.start()
         while self._run_flag:
+            print(self.sleep_time, time.elapsed())
             if not self.is_connected:
                 self.__connect()
-            else:
+            elif time.elapsed() > self.sleep_time:
+                time.start()
+                self.GetHand.emit()
+                message = ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
+                '''
+                if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
+                    continue
+                self.PrevCompress = self.Compress
+                self.PrevHand = self.Hand
+                '''
                 try:
-                    if self.__data != '':
-                        self.__send()
-                        self.__data = ''
-                    else:
-                        wait()
-                        received_data = self.__connection.recv(1024)
+                    self.__connection.sendall(message.encode())
+                    received_data = self.__connection.recv(1024).decode()
+                    self.SendListUpdate.emit(f"{real_time.currentTime().toString(format=Qt.ISODateWithMs)} sent: {message} received: {received_data}")
                 except Exception as e:
                     self.__print_debug(e)
                     if self.is_connected:
@@ -121,27 +84,35 @@ class Robot(QThread):
             self.stop()
 
         self._run_flag = True
+        self.send_mess = True
         self.start()
 
-    def __prepare_sending_data(self, data):
-        if isinstance(data, int):
-            _data = str(data) + self.separator
-        if isinstance(data, str):
-            _data = data + self.separator
-        if isinstance(data, list):
-            _data = self.separator.join(map(str, data)) + self.separator
-        return _data.encode()
-
     def stop(self):
+        try:
+            self.server.close()
+        except Exception as e:
+            print(e)
         if self._run_flag:
-            try:
-                self.socket.close()
-            except Exception as e:
-                print(e)
-
             self._run_flag = False
             self.wait()
             self.SendListUpdate.emit("Server closed.")
+
+    def SetHand(self, CamInfo):
+        x = round((CamInfo["Hand"][1] + CamInfo["height"] / 2) / CamInfo["height"], 3)
+        y = round((CamInfo["Hand"][0] + CamInfo["width"] / 2) / CamInfo["width"], 3)
+        z = round((CamInfo["CalibDist"] - CamInfo["Hand"][2]) / CamInfo["CalibDist"] + self.Home_pose[2], 3)
+
+        self.Hand = [x, y, z]
+        self.Compress = CamInfo["Compress"]
+
+        for i, cord in enumerate(self.Hand):
+            if cord > 1:
+                self.Hand[i] = 1
+            elif cord < 0:
+                self.Hand[i] = 0
+
+    def GoHome(self):
+        self.Hand = self.Home_pose
 
 if __name__ == "__main__":
     #import cv2

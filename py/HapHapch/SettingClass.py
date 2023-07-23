@@ -1,12 +1,19 @@
 import os
 import json
+import socket
 
 
 class Settings:
     def __init__(self, file_path='config/parameters.json'):
         self.__config_path = file_path
         self.__config_dir, self.__config_file = os.path.split(file_path)
-        self.DefaultsSetting = {"host": "192.168.0.15",
+        try:
+            host = socket.gethostbyname(socket.gethostname())
+            print(socket.gethostbyname_ex(socket.gethostname()))
+        except Exception as e:
+            host = ''
+            print(e)
+        self.DefaultsSetting = {"host": host,
                                 "port": "48569",
                                 "timeout": 5,
                                 "CalibDist": "500",
