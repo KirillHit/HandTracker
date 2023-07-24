@@ -19,9 +19,9 @@ class Robot(QThread):
         self.debug_mode = True
         self.separator = ';'
 
-        self.Home_pose = [0, 0.5, 0.8]
+        self.Home_pose = True
         self.Compress = False
-        self.Hand = self.Home_pose
+        self.Hand = [0, 0.5, 0.8]
         self.sleep_time = 30
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,13 +48,15 @@ class Robot(QThread):
         time = QTime()
         time.start()
         while self._run_flag:
-            print(self.sleep_time, time.elapsed())
             if not self.is_connected:
                 self.__connect()
             elif time.elapsed() > self.sleep_time:
                 time.start()
                 self.GetHand.emit()
-                message = ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
+                if self.Home_pose:
+                    message = "home;"
+                else:
+                    message = "go;" + ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
                 '''
                 if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
                     continue
@@ -85,6 +87,7 @@ class Robot(QThread):
 
         self._run_flag = True
         self.send_mess = True
+        self.Home_pose = True
         self.start()
 
     def stop(self):
@@ -100,10 +103,11 @@ class Robot(QThread):
     def SetHand(self, CamInfo):
         x = round((CamInfo["Hand"][1] + CamInfo["height"] / 2) / CamInfo["height"], 3)
         y = round((CamInfo["Hand"][0] + CamInfo["width"] / 2) / CamInfo["width"], 3)
-        z = round((CamInfo["CalibDist"] - CamInfo["Hand"][2]) / CamInfo["CalibDist"] + self.Home_pose[2], 3)
+        z = round((CamInfo["CalibDist"] - CamInfo["Hand"][2]) / CamInfo["CalibDist"] + 0.8, 3)
 
         self.Hand = [x, y, z]
         self.Compress = CamInfo["Compress"]
+        self.Home_pose = False
 
         for i, cord in enumerate(self.Hand):
             if cord > 1:
@@ -112,7 +116,7 @@ class Robot(QThread):
                 self.Hand[i] = 0
 
     def GoHome(self):
-        self.Hand = self.Home_pose
+        self.Home_pose = True
 
 if __name__ == "__main__":
     #import cv2
