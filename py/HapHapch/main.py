@@ -154,7 +154,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def new_Cam(self):
         if self.NumCamEditLine.text().isdigit():
             self.Start_cam.setEnabled(False)
-            QApplication.processEvents()
             self.CameraThread.set_cam(int(self.NumCamEditLine.text()))
             self.HandTracker.width = self.CameraThread.width
             self.HandTracker.height = self.CameraThread.height

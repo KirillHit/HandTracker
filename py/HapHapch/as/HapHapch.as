@@ -3341,7 +3341,9 @@ KROSET R01
 .x 
 .y 
 .z 
-0:client.pc:B
+0:run_to_point:F
+.point 
+.p 
 0:tcp_cycle.pc:B
 .data_cycle 
 .ret 
@@ -3366,6 +3368,8 @@ KROSET R01
 .num 
 .max_length 
 0:tcp_send.pc:B
+0:goto_point.pc:B
+.point 
 @@@ TRANS @@@
 @@@ JOINTS @@@
 @@@ REALS @@@
@@ -3382,23 +3386,15 @@ BASE: NULL
 TOOL: NULL
 .END
 .PROGRAM test ()
-  ; *******************************************************************
-  ;
-  ; Program:      test
-  ; Comment:      
-  ; Author:       User
-  ;
-  ; Date:         7/24/2023
-  ;
-  ; *******************************************************************
-  ;
-  ;
-  POINT i = #start
-  JMOVE i
-  ;
+  DECOMPOSE .ll[0] = l_lower
+  DECOMPOSE .ru[0] = r_upper
+  .dx = .ru[0]-.ll[0]
+  .dy = .ru[1]-.ll[1]
+  .dz = .ru[2]-.ll[2]
+  
 .END
 .PROGRAM main() #0
-  SPEED 50 MM/S ALWAYS
+  SPEED 500 MM/S ALWAYS
   ACCURACY 1
   ACCEL 70
   DECEL 70
@@ -3413,43 +3409,37 @@ TOOL: NULL
   END
 .END
 .PROGRAM tcp_parse (.$data) ;
-	.$separ = ";"
-	.$void = $DECODE (.$data, .$separ, 1)
-	;PRINT "0000", .$data
-	.parse = TRUE
-	WHILE .parse DO
-		.$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
-		.$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
-		.x = VAL (.$value)
-		.$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
-		.$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
-		.y = VAL (.$value)
-		.$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
-		.$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
-		.z = VAL (.$value) * step_height
-		POINT dp[points_length] = TRANS (.y, .x, .z)
-		points_length = points_length + 1
-		IF INSTR (.$data, ";") == 0
-			.parse = FALSE
-		END
-	END
-	
+  .$separ = ";"
+  ;PRINT "0000", .$data
+  .parse = TRUE
+  .$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
+  .$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
+  .x = VAL (.$value)
+  .$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
+  .$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
+  .y = VAL (.$value)
+  .$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
+  .$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
+  .z = VAL (.$value)
+  .x = (ru[0]-ll[0]) * .x
+  .y = (ru[1]-ll[1]) * .y
+  .z = (ru[2]-ll[2]) * .z
+  POINT new_go_point = SHIFT (l_lower BY .x, .y, .z)
 .END
-.PROGRAM client.pc ()
-;  POINT nowp = onep
-;  MC EXECUTE main
-;  TWAIT 10
-;  BRAKE
-;  POINT nowp = twop
-;  TWAIT 10
-;  BRAKE
-;  POINT nowp = trip
-;  TWAIT 10
-;  BRAKE
+.PROGRAM run_to_point ()
+  DECOMPOSE .p[0] = go_point
+  DECOMPOSE .n[0] = new_go_point
+  if (.p[0] <> .n[0]) OR (.p[1] <> .n[1]) OR (.p[2] <> .n[2]) THEN
+    POINT go_point = new_go_point
+    BRAKE
+    SIGNAL go
+  END
 .END
 .PROGRAM tcp_cycle.pc ()
   go = 2001
-  POINT go_point = #start
+  POINT go_point = SHIFT (start BY 0.1)
+  DECOMPOSE ll[0] = l_lower
+  DECOMPOSE ru[0] = r_upper
   MC EXECUTE main
   ; Internal signals for IFP
   ; TCP/ip Settings
@@ -3457,10 +3447,10 @@ TOOL: NULL
   $tcp_ip = "192.168.0.15"
   tcp_send_time = 5
   tcp_conn_time = 8
-  tcp_recv_time = 5
+  tcp_recv_time = 8
   socket_id = -1
   ;
-  debug = TRUE
+  debug = FALSE
   ;
   .$sendmsg = "42"
   ;
@@ -3481,14 +3471,15 @@ TOOL: NULL
           SCASE .$comand OF
             SVALUE "go":
               CALL tcp_parse (.$msg)
-              ;
+              CALL run_to_point
+              CALL tcp_log.pc ("Go to point")
+              CALL tcp_send.pc (.$sendmsg)
             SVALUE "home":
-              POINT go_point = #start
-              BRAKE
-              SIGNAL go
+              POINT new_go_point = start
+              CALL run_to_point
               CALL tcp_log.pc ("Go home")
               CALL tcp_send.pc (.$sendmsg)
-              TWAIT 5
+              TWAIT 3
             SVALUE "heartbeat":        ; Пульс соединения
               CALL tcp_send.pc (.$sendmsg)
           END
@@ -3563,35 +3554,40 @@ TOOL: NULL
 	END
 .END
 .PROGRAM tcp_receive.pc (.$msg,.ret) ;
-	.num = 0
-	.max_length = 255
-	TCP_RECV .ret, socket_id, .$recv_buf[1], .num, tcp_recv_time, .max_length
-	; Check data
-	IF .ret < 0 THEN
-		.$msg = ""
-		.ret = -1
-	ELSE
-		IF .num > 0 THEN
-			.$msg = .$recv_buf[1]
-			CALL tcp_log.pc ("Received message: " + .$msg)
-			;IFPWPRINT 1=.$msg
-		ELSE
-			.$msg = ""
-		END
-	END
+  .num = 0
+  .max_length = 255
+  TCP_RECV .ret, socket_id, .$recv_buf[1], .num, tcp_recv_time, .max_length
+  PRINT .ret
+  ; Check data
+  IF .ret < 0 THEN
+    .$msg = ""
+    .ret = -1
+  ELSE
+    IF .num > 0 THEN
+      .$msg = .$recv_buf[1]
+      CALL tcp_log.pc ("Received message: " + .$msg)
+      ;IFPWPRINT 1=.$msg
+    ELSE
+      .$msg = ""
+    END
+  END
 .END
 .PROGRAM tcp_send.pc(.$msg)
 	.$send_buf[1] = .$msg
 	.buf_n = 1
 	TCP_SEND .ret, socket_id, .$send_buf[1], .buf_n, tcp_send_time
 .END
+.PROGRAM goto_point.pc (.point)
+  POINT .p = .point
+  POINT go_point = .p
+  BRAKE
+  SIGNAL go
+.END
 .TRANS
 l_lower 299.971250 309.993350 -200.002870 27.070290 179.985000 27.086750
 r_upper 640.001890 -290.010680 299.996150 27.698650 179.973280 27.729490
 go_point 308.508510 94.789850 82.767550 21.777730 179.983180 21.796580
-.END
-.JOINTS
-#start -89.999570 19.274050 127.873750 -180.000000 -71.400150 -270.000890
+start 300.002380 -0.004570 199.994200 -0.327290 179.999180 -0.327300
 .END
 .REALS
 go = 2001

@@ -15,7 +15,7 @@ class Settings:
             print(e)
         self.DefaultsSetting = {"host": host,
                                 "port": "48569",
-                                "timeout": 5,
+                                "timeout": 30,
                                 "CalibDist": "500",
                                 "CalibCam": 100,
                                 "TimeApprox": 500,

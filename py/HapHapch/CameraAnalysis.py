@@ -20,6 +20,8 @@ class VideoThread(QThread):
         self.mp_hands = mp.solutions.hands
 
         self.prev_time = 0
+        self.height = 1
+        self.width = 1
 
     def set_cam(self, num_Cam):
         self.stop()
