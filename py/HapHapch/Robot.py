@@ -57,12 +57,6 @@ class Robot(QThread):
                     message = "home;"
                 else:
                     message = "go;" + ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
-                '''
-                if self.PrevCompress == self.Compress and self.PrevHand == self.Hand:
-                    continue
-                self.PrevCompress = self.Compress
-                self.PrevHand = self.Hand
-                '''
                 try:
                     self.__connection.sendall(message.encode())
                     received_data = self.__connection.recv(1024).decode()
