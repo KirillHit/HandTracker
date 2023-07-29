@@ -11,7 +11,7 @@ class HandTracker:
 
         self.height = 1
         self.width = 1
-        self.Radius = 20
+        self.Radius = 80
         self.CalibDist = 500
         self.CalibCam = 83
         self.CamAngle = 90 * 3.14 / 180
@@ -55,10 +55,13 @@ class HandTracker:
     def give_Hand (self, Center, SizeFactor, Compress):
         Now = time.time_ns()
         # Проверка пропажи руки
+        '''
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer*10**9:
             self.TrackingProcess = False
             self.Compress = False
         self.PrevTime = Now
+        '''
+
         # Калибровка размеров руки
         if not self.TrackingProcess:
             if (Center[0]**2 + Center[1]**2) <= self.Radius**2:
@@ -128,9 +131,11 @@ class HandTracker:
     def get_Hand (self):
         Now = time.time_ns()
         # Проверка пропажи руки
+        '''
         if self.TrackingProcess and (Now - self.PrevTime) >= self.LostHandTimer * 10 ** 9:
             self.TrackingProcess = False
             self.Compress = False
+        '''
 
         return {"Hand": self.Hand, "width": self.width, "height": self.height,
                 "CalibDist": self.CalibDist, "Compress": self.Compress}

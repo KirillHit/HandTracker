@@ -48,13 +48,11 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.FixedParam.valueChanged['int'].connect(self.Lab_FixedParam.setNum)
         self.TimeApprox.valueChanged['int'].connect(self.Lab_TimeApprox.setNum)
         self.FixedParam_Z.valueChanged['int'].connect(self.Lab_FixedParam_Z.setNum)
-        self.FrequencySlender.valueChanged['int'].connect(self.Lab_UpdateTime.setNum)
 
         self.Lab_CalibCam.setText(str(self.CalibCam.value()))
         self.Lab_FixedParam.setText(str(self.FixedParam.value()))
         self.Lab_TimeApprox.setText(str(self.TimeApprox.value()))
         self.Lab_FixedParam_Z.setText(str(self.FixedParam_Z.value()))
-        self.Lab_UpdateTime.setText(str(self.FrequencySlender.value()))
 
         self.CalibDist.editingFinished.connect(self.change_cam)
         self.CalibCam.valueChanged.connect(self.change_cam)
@@ -122,13 +120,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.Settings.save_settings(Settings)
 
-    @pyqtSlot(str)
-    def UpdateItem(self, Item):
-        if self.SendList.count() > 50:
-            self.SendList.takeItem(0)
-        self.SendList.addItem(Item)
-        self.SendList.scrollToBottom()
-
     @pyqtSlot()
     def StartServer(self):
         port_host = self.IpLineEdit.text()
@@ -140,15 +131,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             return
         timeout = self.FrequencySlender.value()
         self.RobotThread.start_server(port, host, timeout)
-
-    @pyqtSlot()
-    def HandToRobot(self):
-        if self.HandTracker.TrackingProcess:
-            CamInfo = self.HandTracker.get_Hand()
-            if self.HandExist:
-                self.RobotThread.SetHand(CamInfo)
-        else:
-            self.RobotThread.GoHome()
 
     @pyqtSlot()
     def new_Cam(self):
@@ -183,11 +165,15 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def Hand_update(self, Cordinate, SizeFactor, HandExist, Compress):
         if HandExist:
             self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, Compress))
-            if not self.HandExist:
-                self.HandExist = True
-        elif self.HandExist:
+        else:
             self.Hand_Coords.setText("No hand")
-            self.HandExist = False
+
+    @pyqtSlot()
+    def HandToRobot(self):
+        if self.HandTracker.TrackingProcess:
+            self.RobotThread.SetHand(self.HandTracker.get_Hand())
+        else:
+            self.RobotThread.GoHome()
 
     @pyqtSlot(int)
     def Cam_error(self, Current_cam):
@@ -206,6 +192,13 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msgBox.setText(text)
         msgBox.setStandardButtons(QMessageBox.Ok)
         msgBox.exec()
+
+    @pyqtSlot(str)
+    def UpdateItem(self, Item):
+        if self.SendList.count() > 50:
+            self.SendList.takeItem(0)
+        self.SendList.addItem(Item)
+        self.SendList.scrollToBottom()
 
     def convert_cv_qt(self, cv_img):
         """Convert from an opencv image to QPixmap"""
