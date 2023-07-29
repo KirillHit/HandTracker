@@ -142,7 +142,7 @@ class VideoThread(QThread):
                         self.Hand_find.emit((0, 0), 0, False, 0)
 
                     if self.CalibrationFlag:
-                        cv2.circle(image, (self.width // 2, self.height // 2), 80, (0, 255, 0), 6)
+                        cv2.circle(image, (self.width // 2, self.height // 2), 80, (0, 200, 0), 6)
 
                 cur_time = time.time_ns()
                 fps = ((10 ** 9 // (cur_time - self.prev_time)) + fps) // 2

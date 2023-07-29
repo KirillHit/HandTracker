@@ -32,7 +32,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.HandTracker = HandObject.HandTracker()
 
         self.Settings = Settings()
-        self.HandExist = False
 
         # Самая важная строчка
         self.setWindowIcon(QIcon("icon.jpg"))
