@@ -58,12 +58,10 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.FixedParam.valueChanged.connect(self.change_cam)
         self.TimeApprox.valueChanged.connect(self.change_cam)
         self.FixedParam_Z.valueChanged.connect(self.change_cam)
-        self.CompressBox.stateChanged.connect(self.change_cam)
         self.FrequencySlender.valueChanged.connect(self.change_cam)
 
         self.Start_cam.clicked.connect(self.new_Cam)
         self.StartServerBut.clicked.connect(self.StartServer)
-        # self.StartRobotBut.clicked.connect(self.RobotThread.start)
         self.PauseRobotBut.clicked.connect(self.RobotThread.stop)
 
         # Settings Button
@@ -151,7 +149,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.HandTracker.TimeApprox = int(self.TimeApprox.value())
         self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000
         self.HandTracker.FixedParam_Z = int(self.FixedParam_Z.value())
-        self.HandTracker.ApproxCompress = bool(self.CompressBox.checkState())
 
         self.RobotThread.sleep_time = 1000 // int(self.FrequencySlender.value())
 
@@ -160,10 +157,10 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """Updates the image_label with a new opencv image"""
         self.Lab_Cam.setPixmap(self.convert_cv_qt(cv_img))
 
-    @pyqtSlot(tuple, int, bool, bool)
-    def Hand_update(self, Cordinate, SizeFactor, HandExist, Compress):
-        if HandExist:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand(Cordinate, SizeFactor, Compress))
+    @pyqtSlot(np.single, np.single, np.single, bool, bool)
+    def Hand_update(self, x, y, size_factor, hand_exist, compress):
+        if hand_exist:
+            self.Hand_Coords.setText(self.HandTracker.give_Hand((x, y), size_factor, compress))
         else:
             self.Hand_Coords.setText("No hand")
 
