@@ -43,7 +43,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Настройка полей и ползунков
         # region
-        self.CalibCam.valueChanged['int'].connect(self.Lab_CalibCam.setNum)
+        self.CalibCam.valueChanged['int'].connect(lambda a: self.Lab_CalibCam.setNum(a/100))
         self.FixedParam.valueChanged['int'].connect(self.Lab_FixedParam.setNum)
         self.TimeApprox.valueChanged['int'].connect(self.Lab_TimeApprox.setNum)
         self.FixedParam_Z.valueChanged['int'].connect(self.Lab_FixedParam_Z.setNum)
@@ -144,7 +144,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot()
     def change_cam(self):
         self.HandTracker.CalibDist = int(self.CalibDist.text())
-        self.HandTracker.CalibCam = int(self.CalibCam.value())
+        self.HandTracker.CalibCam = int(self.CalibCam.value()) / 100
         self.HandTracker.FixedParam = int(self.FixedParam.value())
         self.HandTracker.TimeApprox = int(self.TimeApprox.value())
         self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000

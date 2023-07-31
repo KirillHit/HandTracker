@@ -12,7 +12,7 @@ class HandTracker:
         self.width = 1
         self.Radius = 80
         self.CalibDist = 500
-        self.CalibCam = 83
+        self.CalibCam = 1
 
         self.StartTime = 0
         self.PrevTime = 0
@@ -65,8 +65,8 @@ class HandTracker:
             self.Compress = compress
 
             self.Real_z = self.CalibDist * self.SaveSize / size_factor
-            self.Real_x = self.CalibCam * self.Real_z * center[0] / (self.CalibDist * 100)
-            self.Real_y = self.CalibCam * self.Real_z * center[1] / (self.CalibDist * 100)
+            self.Real_x = self.CalibCam * self.Real_z * center[0] / self.CalibDist
+            self.Real_y = self.CalibCam * self.Real_z * center[1] / self.CalibDist
 
             self.approx_z = np.append(self.approx_z, self.Real_z)
             self.approx_t = np.append(self.approx_t, now)
