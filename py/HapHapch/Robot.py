@@ -21,7 +21,7 @@ class Robot(QThread):
 
         self.Home_pose = True
         self.Compress = False
-        self.Hand = [0, 0.5, 0.8]
+        self.Hand = [0, 0, 0]
         self.sleep_time = 30
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -94,20 +94,10 @@ class Robot(QThread):
             self.wait()
             self.SendListUpdate.emit("Server closed.")
 
-    def SetHand(self, CamInfo):
-        x = round((CamInfo["Hand"][1] + CamInfo["height"] / 2) / CamInfo["height"], 3)
-        y = round((CamInfo["Hand"][0] + CamInfo["width"] / 2) / CamInfo["width"], 3)
-        z = round((CamInfo["CalibDist"] - CamInfo["Hand"][2]) / CamInfo["CalibDist"] + 0.8, 3)
-
-        self.Hand = [x, y, z]
-        self.Compress = CamInfo["Compress"]
+    def SetHand(self, hand_info):
+        self.Hand = hand_info[0]
+        self.Compress = hand_info[1]
         self.Home_pose = False
-
-        for i, cord in enumerate(self.Hand):
-            if cord > 1:
-                self.Hand[i] = 1
-            elif cord < 0:
-                self.Hand[i] = 0
 
     def GoHome(self):
         self.Home_pose = True

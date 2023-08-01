@@ -16,11 +16,11 @@
 .NETCONF     0.0.0.0,"",0.0.0.0,0.0.0.0,0.0.0.0,0.0.0.0,""
 .NETCONF2     0.0.0.0,0.0.0.0,0.0.0.0
 .ROBOTDATA1
-ZROBOT.TYPE    30  10   6   1        -706   RS007L-B001 ( 2023-07-31 20:52 )
+ZROBOT.TYPE    30  10   6   1        -706   RS007L-B001 ( 2023-08-01 21:31 )
 ZSYSTEM         1   5         -91
 ZLINEAR         0   0   0   0   0   0  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1         179
 CONT_CODE     701      -10516
-ZZERO         268230658 268488087 268722031 268640256 268331474 268679917 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456   529675606
+ZZERO         268171847 268312240 268614662 268640255 268355506 268656678 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456   534794131
 ENDLESS_POS   0 100 1       -1516
 LANGUAGE      2
 ZSIGSPEC      256 256 512      -15361
@@ -56,7 +56,7 @@ ZSETKVFF_SVSPEC5    1.000   1.000   1.000   1.000   1.000   1.000  -1.000  -1.00
 ZSETKVFFACC_SVSPEC5    0.000   0.000   0.000   0.000   0.000   0.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -1832648705
 ZSETKVFFJRK_SVSPEC5    0.000   0.000   0.000   0.000   0.000   0.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -1832648705
 ZSETKAFF2_SVSPEC5    1.000   1.000   1.000   1.000   1.000   1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000 -1262485505
-ZSAVEMR             65511           6          34          25       65523          29           0           0           0           0           0           0           0           0           0           0           0           0    -1966921
+ZSAVEMR             65503       65520          21          24       65526          27           0           0           0           0           0           0           0           0           0           0           0           0    -2949316
 ZRADIUS        1177.645  1177.645   722.645   247.645   247.645   145.674     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000  -287946702
 ZJTSPEED        370.000   310.000   410.000   550.000   550.000  1000.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000  -262086657
 ZACCTIME          0.400     0.600     0.400     0.200     0.200     0.200     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384   865872138
@@ -1335,38 +1335,38 @@ ZSWITCH ZFIX_CALL_1STEPPG ON   -523
 .END
 .OPE_INFO1
 OPEINFO  30 10 6 1  1623981901  ;(21/6/18 11:05:01) RS007L-B001 
-CONT_TIM  7.3 
-SERV_TIM  4.6 
-MTON_CNT  44 
+CONT_TIM  3.0 
+SERV_TIM  1.4 
+MTON_CNT  22 
 ESTP_CNT  0 
-BRKE_CNT  44 
-CON_PWR  0.045 
-SUP_PWR  0.045 
+BRKE_CNT  22 
+CON_PWR  0.016 
+SUP_PWR  0.016 
 REG_PWR  0.000 
-MOVE_TJT  1.1 1.3 1.1 0.0 0.7 0.7 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-DIST_DJT  18.946 17.226 15.352 0.000 10.018 16.607 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
-DIST_DJT_PLUS  9.489 8.572 7.645 0.000 5.096 8.117 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
-OPEINFO TP_BKLIGHT  0 0.8 50000 
+MOVE_TJT  0.3 0.4 0.3 0.0 0.2 0.2 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+DIST_DJT  3.370 3.780 2.607 0.000 2.295 3.041 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+DIST_DJT_PLUS  1.688 1.918 1.325 0.000 1.162 1.713 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+OPEINFO TP_BKLIGHT  0 0.7 50000 
 OPEINFO MC  0 0 2000000 
 OPEINFO PARTS1  0 0 0 0 0 0 0 0 0 0 0 
 OPEINFO PARTS2  0 0 0 0 0 0 0 0 0 0 0 
 OPEINFO PARTS3  0 0 0 0 0 0 0 0 0 0 0 
 M_OPEINFO  30 10 6 1  1623981901  ;(21/6/18 11:05:01) RS007L-B001 
-M_CONT_TIM  7.3 
-M_SERV_TIM  4.6 
-M_MTON_CNT  44 
+M_CONT_TIM  3.0 
+M_SERV_TIM  1.4 
+M_MTON_CNT  22 
 M_ESTP_CNT  0 
-M_BRKE_CNT  44 
-M_CON_PWR  0.045 
-M_SUP_PWR  0.045 
+M_BRKE_CNT  22 
+M_CON_PWR  0.016 
+M_SUP_PWR  0.016 
 M_REG_PWR  0.000 
-M_MOVE_TJT  1.1 1.3 1.1 0.0 0.7 0.7 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-M_DIST_DJT  18.946 17.226 15.352 0.000 10.018 16.607 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
-M_DIST_DJT_PLUS  9.489 8.572 7.645 0.000 5.096 8.117 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+M_MOVE_TJT  0.3 0.4 0.3 0.0 0.2 0.2 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+M_DIST_DJT  3.370 3.780 2.607 0.000 2.295 3.041 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+M_DIST_DJT_PLUS  1.688 1.918 1.325 0.000 1.162 1.713 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
 M_MOVE_TJT_OVERDRIVE  0.0 0.0 0.0 0.0 0.0 0.0 
 M_DIST_DJT_OVERDRIVE  0.000 0.000 0.000 0.000 0.000 0.000 
 M_WARN_CJT_OVERDRIVE  0 0 0 0 0 0 
-HOUR_MTR  7.3 
+HOUR_MTR  3.0 
 .END
 .SYSDATA
 REG_POINT       0
@@ -2457,7 +2457,7 @@ SWITCH SLOW_REP_MM     OFF
 .END
 .CONDITION
 AS_VER       ASF_01000001G
-ELOG_NUM              4
+ELOG_NUM             15
 CHK_ONCE      255
 MAN_SPEED     1
 CHK_SPEED     1
@@ -2491,17 +2491,17 @@ CINT_PRG_ACCEL    100.000
 CINT_PRM_DECEL    100.000
 CINT_PRG_DECEL    100.000
 PRG_ACCEL_ORG     70.000
-PRG_SPEED_ORG      3.000
+PRG_SPEED_ORG      0.600
 PRG_DECEL_ORG     70.000
 PRG_JT_ACCEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 PRG_JT_DECEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 PRM_JT_ACCEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 PRM_JT_DECEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 STEP1ENV_CALL_PRGNAME main
-STEP1ENV_PRG_STEP          8
+STEP1ENV_PRG_STEP          1
 STEP2ENV0_CALL_PRGNAME tcp_cycle.pc
 STEP2ENV0_PRG_STEP          1
-USR_DO1      11100000000000000000000000000000
+USR_DO1      10100000000000000000000000000000
 USR_DO2      00000000000000000000000000000000
 USR_DO3      00000000000000000000000000000000
 USR_DO4      00000000000000000000000000000000
@@ -3031,8 +3031,6 @@ ROB_EXTERNAL_RESTART          0
 ROB_OP_AFTER_ERROR          0
 MOVING_AREA       0.000     0.000     0.000     0.000     0.000     0.000
 ENC_ALARM              0          0          0          0          0          0
-N_INT1    "go  "
-N_INT2    "is_home  "
 SENSING_SPEED     10.000     0.000 255
 SENS_STROKE       0.000
 PAL_TYPE_01     0
@@ -3348,8 +3346,6 @@ KROSET R01
 .n 
 0:start:F
 0:tcp_cycle.pc:B
-.data_cycle 
-.ret 
 0:tcp_open.pc:B
 .i 
 .ip 
@@ -3416,15 +3412,29 @@ TOOL: NULL
   .$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
   .$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
   .z = VAL (.$value)
-  .x = (ru[0]-ll[0]) * .x
-  .y = (ru[1]-ll[1]) * .y
-  .z = (ru[2]-ll[2]) * .z
-  POINT new_go_point = SHIFT (l_lower BY .x, .y, .z)
+  ; .x = (ru[0]-ll[0]) * .x
+  ; .y = (ru[1]-ll[1]) * .y
+  ; .z = (ru[2]-ll[2]) * .z
+  POINT new_go_point = SHIFT (base_point BY .x, .y, .z)
 .END
 .PROGRAM run_to_point ()
   DECOMPOSE .p[0] = go_point
   DECOMPOSE .n[0] = new_go_point
-  if (.p[0] <> .n[0]) OR (.p[1] <> .n[1]) OR (.p[2] <> .n[2]) THEN
+  ;
+  FOR i=0 TO 2
+    IF .n[i] < ll[i] THEN
+      .n[i] = ll[i]
+    ELSE
+      IF .n[i] > ru[i] THEN
+        .n[i] = ru[i]
+      END
+    END
+  END
+  POINT/X new_go_point = .n[0]
+  POINT/Y new_go_point = .n[1]
+  POINT/Z new_go_point = .n[2]
+  ;
+  if ((.p[0] <> .n[0]) OR (.p[1] <> .n[1]) OR (.p[2] <> .n[2])) THEN
     POINT go_point = new_go_point
     BRAKE
     SIGNAL go
@@ -3439,7 +3449,7 @@ TOOL: NULL
   BREAK
   SIGNAL is_home
 .END
-.PROGRAM tcp_cycle.pc ()
+.PROGRAM tcp_cycle.pc() #0
   go = 2001
   is_home = 2002
   SIGNAL -go
@@ -3448,14 +3458,15 @@ TOOL: NULL
   POINT go_point = start
   DECOMPOSE ll[0] = l_lower
   DECOMPOSE ru[0] = r_upper
+  DECOMPOSE bp[0] = base_point
   ;
-  WAIT SWITCH (POWER)
+  WAIT SWITCH(POWER)
   MC EXECUTE start
   WAIT SIG(is_home)
   TWAIT 1
   ;
-  ; ERRSTART.PC ON
-  SINGULAR OFF
+  ; errstart.pc ON
+  ; SINGULAR OFF
   MC EXECUTE main
   ; Internal signals for IFP
   ; TCP/ip Settings
@@ -3473,28 +3484,28 @@ TOOL: NULL
   .$separ = ";"
   WHILE TRUE DO
     CALL tcp_open.pc
-    IF socket_id <> -1 THEN
+    IF socket_id<>-1 THEN
       .data_cycle = TRUE
       WHILE .data_cycle DO
-        CALL tcp_receive.pc (.$msg, .ret)
-        IF .ret == -1 THEN
-          CALL tcp_log.pc ("TCP receive timeout exception. Reconnecting")
+        CALL tcp_receive.pc(.$msg,.ret)
+        IF .ret==-1 THEN
+          CALL tcp_log.pc("TCP receive timeout exception. Reconnecting")
           .data_cycle = FALSE
           CALL tcp_close.pc
         ELSE
-          .$comand = $DECODE (.$msg, .$separ, 0) ; Считывание команды
-          .$void = $DECODE (.$msg, .$separ, 1) ; удаление разделителя после команды
+          .$comand = $DECODE(.$msg,.$separ,0) ; Считывание команды
+          .$void = $DECODE(.$msg,.$separ,1) ; удаление разделителя после команды
           SCASE .$comand OF
-            SVALUE "go":
-              CALL tcp_parse (.$msg)
-              CALL run_to_point
-              CALL tcp_log.pc ("Go to point")
-            SVALUE "home":
-              POINT new_go_point = start
-              CALL run_to_point
-              CALL tcp_log.pc ("Go home")
+           SVALUE "go":
+            CALL tcp_parse(.$msg)
+            CALL run_to_point
+            CALL tcp_log.pc("Go to point")
+           SVALUE "home":
+            POINT new_go_point = start
+            CALL run_to_point
+            CALL tcp_log.pc("Go home")
           END
-          CALL tcp_send.pc (.$sendmsg)
+          CALL tcp_send.pc(.$sendmsg)
         END
       END
     END
@@ -3594,10 +3605,11 @@ TOOL: NULL
   ;MC EXECUTE main
 .END
 .TRANS
-l_lower 299.971252 309.993347 -200.002869 27.070292 179.985001 27.086744
+l_lower 299.971252 309.993347 -200.002869 27.070292 179.985001 27.086742
 r_upper 640.001892 -290.010681 299.996155 27.698650 179.973282 27.729488
-go_point 640.001892 309.993347 -30.003204 27.070292 179.985001 27.086744
+go_point 300.002380 -0.004570 199.994202 -0.327290 179.999176 -0.327300
 start 300.002380 -0.004570 199.994202 -0.327290 179.999176 -0.327300
+base_point 466.748230 -0.008230 200.001221 -13.221069 179.996384 -9.600800
 .END
 .REALS
 go = 2001
