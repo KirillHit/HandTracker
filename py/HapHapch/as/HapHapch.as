@@ -3318,6 +3318,8 @@ EESTOP_THRESHOLD          2
 EESTOP_ERROR_CODE       0
 EESTOP_DELAY_TIME      3.000
 TP_RECINHI      0   0   0
+N_INT1    "go  "
+N_INT2    "is_home  "
 .END
 .SIG_COMMENT
 .END
@@ -3346,6 +3348,8 @@ KROSET R01
 .n 
 0:start:F
 0:tcp_cycle.pc:B
+.data_cycle 
+.ret 
 0:tcp_open.pc:B
 .i 
 .ip 
@@ -3388,13 +3392,15 @@ TOOL: NULL
 .END
 .PROGRAM main()
   SPEED 150 MM/S ALWAYS
-  ACCURACY 1 ALWAYS
+  ACCURACY 20 ALWAYS
   ACCEL 70 ALWAYS
   DECEL 70 ALWAYS
   WHILE TRUE DO
     IF SIG(go) THEN
       SIGNAL -go
-      JMOVE go_point
+      ;ACCEL val_accel
+      ;DECEL val_accel
+      LMOVE go_point
       BREAK
     END
   END
@@ -3422,20 +3428,35 @@ TOOL: NULL
   DECOMPOSE .n[0] = new_go_point
   ;
   FOR i=0 TO 2
-    IF .n[i] < ll[i] THEN
-      .n[i] = ll[i]
+    IF (ru[i] - ll[i]) > 0 THEN
+      IF .n[i] < ll[i] THEN
+        .n[i] = ll[i]
+      ELSE
+        IF .n[i] > ru[i] THEN
+          .n[i] = ru[i]
+        END
+      END
     ELSE
-      IF .n[i] > ru[i] THEN
-        .n[i] = ru[i]
+      IF .n[i] > ll[i] THEN
+        .n[i] = ll[i]
+      ELSE
+        IF .n[i] < ru[i] THEN
+          .n[i] = ru[i]
+        END
       END
     END
   END
-  POINT/X new_go_point = .n[0]
-  POINT/Y new_go_point = .n[1]
-  POINT/Z new_go_point = .n[2]
+  ;
+  POINT new_go_point = TRANS(.n[0], .n[1], .n[2], .n[3], .n[4], .n[5])
   ;
   if ((.p[0] <> .n[0]) OR (.p[1] <> .n[1]) OR (.p[2] <> .n[2])) THEN
     POINT go_point = new_go_point
+    ;val_accel = DISTANCE(go_point, HERE) / 10
+    ;IF val_accel > 70 THEN
+    ;  val_accel = 70
+    ;END
+    ;PRINT("Acceleration:")
+    ;PRINT(val_accel)
     BRAKE
     SIGNAL go
   END
@@ -3454,6 +3475,7 @@ TOOL: NULL
   is_home = 2002
   SIGNAL -go
   SIGNAL -is_home
+  val_accel = 70
   ;
   POINT go_point = start
   DECOMPOSE ll[0] = l_lower

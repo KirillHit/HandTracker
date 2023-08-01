@@ -1,1 +1,1 @@
-{"host": "192.168.0.15", "port": "48569", "timeout": 30, "CalibDist": "500", "CalibCam": 50, "TimeApprox": 0, "FixedParam": 0, "FixedParam_Z": 0}
+{"host": "192.168.0.15", "port": "48569", "timeout": 30, "CalibDist": "500", "CalibCam": 60, "TimeApprox": 0, "FixedParam": 0, "FixedParam_Z": 0}
