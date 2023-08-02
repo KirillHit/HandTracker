@@ -46,6 +46,7 @@ class HandTracker:
                         self.TrackingProcess = True
                         self.SaveSize = np.mean(self.SaveSize, dtype=np.single)
                         self.hand_mass = np.array([[0]*3]*self.averaging_len, dtype=np.single)
+                        return "Success"
             else:
                 self.StartTime = 0
             return "Calibration"

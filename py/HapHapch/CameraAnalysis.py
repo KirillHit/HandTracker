@@ -13,8 +13,8 @@ class VideoThread(QThread):
 
     def __init__(self):
         super().__init__()
-        self._run_flag = True
-        self.game_flag = True
+        self._run_flag = False
+        self.game_flag = False
         self.calibration_flag = True
         self.cap = cv2.VideoCapture()
         self.num_cam = 0

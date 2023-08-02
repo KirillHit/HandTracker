@@ -23,7 +23,9 @@ class Settings:
                                 "FixedParam_Z": 4,
                                 "Change_XY": False,
                                 "Inv_X": False,
-                                "Inv_Y": False}
+                                "Inv_Y": False,
+                                "game_time": "1:30",
+                                "add_game_time": "2:30"}
 
     def __load_settings(self):
         if os.path.exists(self.__config_path):

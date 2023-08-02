@@ -8,7 +8,7 @@ import cv2
 
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QApplication
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot
+from PyQt5.QtCore import Qt, QTimer, pyqtSlot, QTime
 from PyQt5.QtGui import QPixmap, QIcon, QImage
 from Qt.PyQtWindow import Ui_MainWindow
 
@@ -19,6 +19,8 @@ from SettingClass import Settings
 
 
 class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    end_delay = 1000
+
     def __init__(self):
         # Загрузка окна
         super().__init__()
@@ -41,9 +43,19 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
+        self.StartGameBut.clicked.connect(lambda: self.GameFlag(True))
+        self.StopGameBut.clicked.connect(lambda: self.GameFlag(False))
+
+        self.game_timer = QTimer()
+        self.game_timer.timeout.connect(self.StopGame)
+
+        self.update_timer = QTimer()
+        self.update_timer.timeout.connect(self.UpdateTimer)
+        self.update_timer.setInterval(200)
+
         # Настройка полей и ползунков
         # region
-        self.CalibCam.valueChanged['int'].connect(lambda a: self.Lab_CalibCam.setNum(a/100))
+        self.CalibCam.valueChanged['int'].connect(lambda a: self.Lab_CalibCam.setNum(a / 100))
         self.FixedParam.valueChanged['int'].connect(self.Lab_FixedParam.setNum)
         self.TimeApprox.valueChanged['int'].connect(self.Lab_TimeApprox.setNum)
         self.FixedParam_Z.valueChanged['int'].connect(self.Lab_FixedParam_Z.setNum)
@@ -89,6 +101,39 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.change_cam()
 
     @pyqtSlot(bool)
+    def GameFlag(self, game_flag):
+        self.CameraThread.game_flag = game_flag
+        if not game_flag:
+            self.StopGame()
+
+    @pyqtSlot()
+    def StartGame(self):
+        if self.AddTime_checkBox.isChecked():
+            time = self.Add_timeEdit.time()
+        else:
+            time = self.timeEdit.time()
+        self.game_timer.start((time.minute() * 60 + time.second()) * 1000)
+        self.update_timer.start()
+
+    @pyqtSlot()
+    def StopGame(self):
+        self.game_timer.stop()
+        self.update_timer.stop()
+        self.HandTracker.TrackingProcess = False
+
+        # Задержка после окончания времени
+        self.CameraThread.game_flag = False
+        QTimer.singleShot(self.end_delay, lambda: self.GameFlag(True))
+
+        self.lab_game_timeout.setText("00:00")
+
+    @pyqtSlot()
+    def UpdateTimer(self):
+        time = int(self.game_timer.remainingTime() / 1000)
+        (minutes, seconds) = divmod(time, 60)
+        self.lab_game_timeout.setText(f"{minutes:02.0f}:{seconds:02.0f}")
+
+    @pyqtSlot(bool)
     def LoadSettings(self, defaults=False):
         if defaults:
             Settings = self.Settings.get_defaults_settings()
@@ -106,6 +151,8 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.Change_XY_Box.setChecked(Settings["Change_XY"])
             self.Inv_X_Box.setChecked(Settings["Inv_X"])
             self.Inv_Y_Box.setChecked(Settings["Inv_Y"])
+            self.timeEdit.setTime(QTime(0, *map(int, Settings["game_time"].split(":"))))
+            self.Add_timeEdit.setTime(QTime(0, *map(int, Settings["add_game_time"].split(":"))))
         except Exception as e:
             print("Not found:" + str(e))
             self.Settings.save_settings(self.Settings.get_defaults_settings())
@@ -122,7 +169,9 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     "timeout": self.FrequencySlender.value(),
                     "Change_XY": self.Change_XY_Box.isChecked(),
                     "Inv_X": self.Inv_X_Box.isChecked(),
-                    "Inv_Y": self.Inv_Y_Box.isChecked()}
+                    "Inv_Y": self.Inv_Y_Box.isChecked(),
+                    "game_time": self.timeEdit.time().toString().split(":", 1)[1],
+                    "add_game_time": self.Add_timeEdit.time().toString().split(":", 1)[1]}
 
         self.Settings.save_settings(Settings)
 
@@ -172,9 +221,13 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot(np.single, np.single, np.single, bool, bool)
     def Hand_update(self, x, y, size_factor, hand_exist, compress):
         if hand_exist:
-            self.Hand_Coords.setText(self.HandTracker.give_Hand((x, y), size_factor, compress))
+            result = self.HandTracker.give_Hand((x, y), size_factor, compress)
+            self.Hand_Coords.setText(result)
+            if result == "Success":
+                self.StartGame()
         else:
             self.Hand_Coords.setText("No hand")
+        self.CameraThread.calibration_flag = not self.HandTracker.TrackingProcess
 
     @pyqtSlot()
     def HandToRobot(self):
@@ -221,6 +274,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.CameraThread.stop()
         self.RobotThread.stop()
         event.accept()
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
