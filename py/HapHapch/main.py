@@ -59,6 +59,9 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.TimeApprox.valueChanged.connect(self.change_cam)
         self.FixedParam_Z.valueChanged.connect(self.change_cam)
         self.FrequencySlender.valueChanged.connect(self.change_cam)
+        self.Change_XY_Box.stateChanged.connect(self.change_cam)
+        self.Inv_X_Box.stateChanged.connect(self.change_cam)
+        self.Inv_Y_Box.stateChanged.connect(self.change_cam)
 
         self.Start_cam.clicked.connect(self.new_Cam)
         self.StartServerBut.clicked.connect(self.StartServer)
@@ -100,6 +103,9 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.FixedParam_Z.setValue(Settings["FixedParam_Z"])
             self.IpLineEdit.setText(f"{Settings['host']}:{Settings['port']}")
             self.FrequencySlender.setValue(Settings["timeout"])
+            self.Change_XY_Box.setChecked(Settings["Change_XY"])
+            self.Inv_X_Box.setChecked(Settings["Inv_X"])
+            self.Inv_Y_Box.setChecked(Settings["Inv_Y"])
         except Exception as e:
             print("Not found:" + str(e))
             self.Settings.save_settings(self.Settings.get_defaults_settings())
@@ -113,7 +119,10 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     "FixedParam_Z": self.FixedParam_Z.value(),
                     "host": self.IpLineEdit.text().split(':')[0],
                     "port": self.IpLineEdit.text().split(':')[1],
-                    "timeout": self.FrequencySlender.value()}
+                    "timeout": self.FrequencySlender.value(),
+                    "Change_XY": self.Change_XY_Box.isChecked(),
+                    "Inv_X": self.Inv_X_Box.isChecked(),
+                    "Inv_Y": self.Inv_Y_Box.isChecked()}
 
         self.Settings.save_settings(Settings)
 
@@ -144,11 +153,16 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.HandTracker.CalibDist = int(self.CalibDist.text())
         self.HandTracker.CalibCam = int(self.CalibCam.value()) / 100
         self.HandTracker.FixedParam = int(self.FixedParam.value())
-        self.HandTracker.TimeApprox = int(self.TimeApprox.value())
-        self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000
         self.HandTracker.FixedParam_Z = int(self.FixedParam_Z.value())
+        # self.HandTracker.TimeApprox = int(self.TimeApprox.value())
+        # self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000
+        self.HandTracker.NewAveragingLen(int(self.TimeApprox.value()))
 
         self.RobotThread.sleep_time = 1000 // int(self.FrequencySlender.value())
+
+        self.HandTracker.Change_XY = self.Change_XY_Box.isChecked()
+        self.HandTracker.Inv_X = self.Inv_X_Box.isChecked()
+        self.HandTracker.Inv_Y = self.Inv_Y_Box.isChecked()
 
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):

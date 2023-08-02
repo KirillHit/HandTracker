@@ -18,9 +18,12 @@ class Settings:
                                 "timeout": 30,
                                 "CalibDist": "500",
                                 "CalibCam": 100,
-                                "TimeApprox": 500,
+                                "TimeApprox": 30,
                                 "FixedParam": 3,
-                                "FixedParam_Z": 4}
+                                "FixedParam_Z": 4,
+                                "Change_XY": False,
+                                "Inv_X": False,
+                                "Inv_Y": False}
 
     def __load_settings(self):
         if os.path.exists(self.__config_path):

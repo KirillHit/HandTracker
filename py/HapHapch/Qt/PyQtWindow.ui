@@ -296,10 +296,10 @@
            <property name="verticalSpacing">
             <number>10</number>
            </property>
-           <item row="0" column="1">
-            <widget class="QSlider" name="CalibCam">
+           <item row="1" column="1">
+            <widget class="QSlider" name="TimeApprox">
              <property name="maximum">
-              <number>300</number>
+              <number>100</number>
              </property>
              <property name="pageStep">
               <number>1</number>
@@ -312,30 +312,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QSlider" name="FixedParam">
+           <item row="0" column="1">
+            <widget class="QSlider" name="CalibCam">
              <property name="maximum">
-              <number>20</number>
-             </property>
-             <property name="pageStep">
-              <number>1</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Порог движения Z</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QSlider" name="TimeApprox">
-             <property name="maximum">
-              <number>2000</number>
+              <number>300</number>
              </property>
              <property name="pageStep">
               <number>1</number>
@@ -364,6 +344,13 @@
              </property>
             </widget>
            </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Порог движения Z</string>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="2">
             <widget class="QLabel" name="Lab_TimeApprox">
              <property name="sizePolicy">
@@ -377,6 +364,39 @@
              </property>
              <property name="margin">
               <number>3</number>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QSlider" name="FixedParam">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Cглаживание</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QSlider" name="FixedParam_Z">
+             <property name="maximum">
+              <number>100</number>
+             </property>
+             <property name="pageStep">
+              <number>1</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
             </widget>
            </item>
@@ -402,13 +422,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Время усреднения (мс)</string>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="2">
             <widget class="QLabel" name="Lab_FixedParam">
              <property name="sizePolicy">
@@ -425,19 +438,6 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QSlider" name="FixedParam_Z">
-             <property name="maximum">
-              <number>20</number>
-             </property>
-             <property name="pageStep">
-              <number>1</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
@@ -449,6 +449,73 @@
             <widget class="QLabel" name="lab">
              <property name="text">
               <string>Эквивалент камеры</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_14">
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="Change_XY_Box">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string>Поменять X и Y:</string>
+             </property>
+             <property name="tristate">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Inv_X_Box">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string>Инверсия X:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_7">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="Inv_Y_Box">
+             <property name="layoutDirection">
+              <enum>Qt::RightToLeft</enum>
+             </property>
+             <property name="text">
+              <string>Инверсия  Y:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string/>
              </property>
             </widget>
            </item>
@@ -535,6 +602,9 @@ color: rgb(0, 170, 0);</string>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_8" stretch="1,0,1">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
@@ -567,6 +637,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_12">
                  <property name="sizePolicy">
@@ -620,6 +696,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <property name="topMargin">
+                <number>3</number>
+               </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QPushButton" name="StartServerBut">
                  <property name="sizePolicy">
@@ -655,15 +737,30 @@ color: rgb(0, 170, 0);</string>
               </layout>
              </item>
              <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,0,0">
+              <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="0,0,0">
                <property name="spacing">
                 <number>10</number>
+               </property>
+               <property name="sizeConstraint">
+                <enum>QLayout::SetDefaultConstraint</enum>
+               </property>
+               <property name="topMargin">
+                <number>3</number>
                </property>
                <property name="rightMargin">
                 <number>0</number>
                </property>
+               <property name="bottomMargin">
+                <number>3</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_15">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>Частота обновления:</string>
                  </property>
@@ -672,7 +769,7 @@ color: rgb(0, 170, 0);</string>
                <item>
                 <widget class="QSpinBox" name="FrequencySlender">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -688,7 +785,7 @@ color: rgb(0, 170, 0);</string>
                <item>
                 <widget class="QLabel" name="label_5">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -699,6 +796,19 @@ color: rgb(0, 170, 0);</string>
                 </widget>
                </item>
               </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_16">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -750,6 +860,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_9">
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
                <item>
                 <widget class="QPushButton" name="StartGameBut">
                  <property name="minimumSize">
@@ -780,6 +896,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout">
+               <property name="topMargin">
+                <number>2</number>
+               </property>
+               <property name="bottomMargin">
+                <number>2</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_17">
                  <property name="sizePolicy">
@@ -820,6 +942,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_11">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_18">
                  <property name="text">
@@ -854,6 +982,12 @@ color: rgb(0, 170, 0);</string>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item>
                 <widget class="QLabel" name="label_22">
                  <property name="text">

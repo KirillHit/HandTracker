@@ -21,13 +21,15 @@ class HandTracker:
 
         self.FixedParam = 3
         self.FixedParam_Z = 14
-        # -----
-        self.Fixed_x = 0
-        self.Fixed_y = 0
-        self.Fixed_z = 0
-        # -----
+        self.averaging_len = 30
+        self.hand_mass = np.array([[0] * 3] * self.averaging_len, dtype=np.single)
+
         self.Hand = [0, 0, 0]
         self.Compress = False
+
+        self.Change_XY = False
+        self.Inv_X = False
+        self.Inv_Y = False
 
     def give_Hand(self, center, size_factor, compress):
         now = time.time_ns()
@@ -43,7 +45,7 @@ class HandTracker:
                     if (now - self.StartTime) >= self.CalibTimer * 10 ** 9:
                         self.TrackingProcess = True
                         self.SaveSize = np.mean(self.SaveSize, dtype=np.single)
-
+                        self.hand_mass = np.array([[0]*3]*self.averaging_len, dtype=np.single)
             else:
                 self.StartTime = 0
             return "Calibration"
@@ -56,26 +58,6 @@ class HandTracker:
             self.Real_y = self.CalibCam * self.cam_z * center[1] / self.CalibDist
 
             '''
-            self.approx_z = np.append(self.approx_z, self.Real_z)
-            self.approx_t = np.append(self.approx_t, now)
-            self.approx_x = np.append(self.approx_x, self.Real_x)
-            self.approx_y = np.append(self.approx_y, self.Real_y)
-
-            self.approx_z = self.approx_z[-self.LenApprox:]
-            self.approx_t = self.approx_t[-self.LenApprox:]
-            self.approx_x = self.approx_x[-self.LenApprox:]
-            self.approx_y = self.approx_y[-self.LenApprox:]
-
-            for i, now in enumerate(reversed(self.approx_t[1:])):
-                if (self.approx_t[-1] - now) >= self.TimeApprox * (10 ** 6):
-                    break
-            
-            self.Real_z = np.mean(self.approx_z[-i:], dtype=np.single)
-            self.Real_x = np.mean(self.approx_x[-i:], dtype=np.single)
-            self.Real_y = np.mean(self.approx_y[-i:], dtype=np.single)
-            '''
-
-            '''
             if (abs(self.Fixed_z - self.Real_z)) > self.FixedParam_Z:
                 self.Fixed_z = self.Real_z
             if (abs(self.Fixed_y - self.Real_y)) > self.FixedParam:
@@ -84,11 +66,30 @@ class HandTracker:
                 self.Fixed_x = self.Real_x
             '''
 
-            self.Hand = [self.Real_x, self.Real_y, self.Real_z]
-
+            self.Hand = [self.Real_x, self.Real_y]
+            if self.Change_XY:
+                self.Hand.reverse()
+            if self.Inv_X:
+                self.Hand[0] = -1 * self.Hand[0]
+            if self.Inv_Y:
+                self.Hand[1] = -1 * self.Hand[1]
+            self.Hand.append(self.Real_z)
             self.Compress = compress
 
+            self.hand_mass = np.append(self.hand_mass, [self.Hand], axis=0)
+            self.hand_mass = self.hand_mass[-self.averaging_len:]
+            # Dm = np.absolute(self.Hand - np.mean(self.hand_mass))
+            #if Dm[0] < self.FixedParam or Dm[1] < self.FixedParam or Dm[2] < self.FixedParam_Z:
+                # self.Hand = np.mean(self.hand_mass, axis=0)
+            self.Hand = np.average(self.hand_mass, weights=np.arange(1, self.averaging_len + 1), axis=0)
+
             return ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
+
+    def NewAveragingLen(self, len):
+        if len > self.averaging_len:
+            self.hand_mass = np.insert(self.hand_mass, 0, [self.hand_mass[0]] * (len - self.averaging_len), axis=0)
+        self.averaging_len = len
+
 
     def get_Hand(self):
         return (self.Hand, self.Compress)

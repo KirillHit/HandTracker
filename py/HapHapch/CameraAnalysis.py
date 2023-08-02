@@ -49,7 +49,7 @@ class VideoThread(QThread):
                     self.stop()
                     break
 
-                # image = cv2.flip(image, 1)
+                image = cv2.flip(image, 1)
                 if self.game_flag:
                     results = hands.process(image)
                     if results.multi_hand_landmarks:
@@ -70,9 +70,10 @@ class VideoThread(QThread):
                             ]
 
                             # Заполнение матрицы точек руки
-                            all_point = np.array([[point.x * self.width, point.y * self.height, point.z * self.width]
+                            all_point = np.array([[point.x * self.width, point.y * self.height, point.z * self.width * 1.5]
                                                   for point in marks], dtype=np.single)
-                            # Z использует примерно тот же масштаб, что и x
+                            """Z использует примерно тот же масштаб, что и x (* 1.5 точнее). Если при наклоне руки 
+                            камера фиксирует перемещение вверх-вниз, изменение этого коэффициента может помочь."""
 
                             # Определение центра руки
                             center = np.mean(all_point[:5], dtype=np.single, axis=0)
