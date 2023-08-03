@@ -5,19 +5,19 @@ import time
 
 
 class HandTracker:
-    def __init__(self):
+    def __init__(self, radius=60):
         self.SaveSize = None
         self.TrackingProcess = False
 
         self.height = 1
         self.width = 1
-        self.Radius = 80
+        self.Radius = radius
         self.CalibDist = 500
         self.CalibCam = 1
 
         self.StartTime = 0
         self.PrevTime = 0
-        self.CalibTimer = 1
+        self.CalibTimer = 2
 
         self.FixedParam = 3
         self.FixedParam_Z = 14
@@ -44,6 +44,7 @@ class HandTracker:
                     self.SaveSize = np.append(self.SaveSize, size_factor)
                     if (now - self.StartTime) >= self.CalibTimer * 10 ** 9:
                         self.TrackingProcess = True
+                        self.StartTime = 0
                         self.SaveSize = np.mean(self.SaveSize, dtype=np.single)
                         self.hand_mass = np.array([[0]*3]*self.averaging_len, dtype=np.single)
                         return "Success"

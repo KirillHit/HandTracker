@@ -298,6 +298,9 @@
            </property>
            <item row="1" column="1">
             <widget class="QSlider" name="TimeApprox">
+             <property name="minimum">
+              <number>1</number>
+             </property>
              <property name="maximum">
               <number>100</number>
              </property>
@@ -305,7 +308,7 @@
               <number>1</number>
              </property>
              <property name="value">
-              <number>0</number>
+              <number>1</number>
              </property>
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -315,7 +318,7 @@
            <item row="0" column="1">
             <widget class="QSlider" name="CalibCam">
              <property name="maximum">
-              <number>300</number>
+              <number>800</number>
              </property>
              <property name="pageStep">
               <number>1</number>

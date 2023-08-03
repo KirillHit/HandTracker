@@ -11,7 +11,7 @@ class VideoThread(QThread):
     Cam_error_signal = pyqtSignal(int)
     Hand_find = pyqtSignal(np.single, np.single, np.single, bool, bool)
 
-    def __init__(self):
+    def __init__(self, radius=60):
         super().__init__()
         self._run_flag = False
         self.game_flag = False
@@ -25,6 +25,7 @@ class VideoThread(QThread):
         self.prev_time = 0
         self.height = 1
         self.width = 1
+        self.calib_radius = radius
 
     def set_cam(self, num_cam):
         self.stop()
@@ -99,7 +100,7 @@ class VideoThread(QThread):
                         self.Hand_find.emit(np.single(0), np.single(0), np.single(0), False, 0)
 
                     if self.calibration_flag:
-                        cv2.circle(image, (self.width // 2, self.height // 2), 80, (0, 200, 0), 6)
+                        cv2.circle(image, (self.width // 2, self.height // 2), self.calib_radius, (0, 200, 0), 4)
 
                 # Счётчик fps
                 cur_time = time.time_ns()

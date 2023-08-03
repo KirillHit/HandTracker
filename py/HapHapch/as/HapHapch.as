@@ -3318,6 +3318,8 @@ EESTOP_THRESHOLD          2
 EESTOP_ERROR_CODE       0
 EESTOP_DELAY_TIME      3.000
 TP_RECINHI      0   0   0
+N_INT1    "go  "
+N_INT2    "is_home  "
 .END
 .SIG_COMMENT
 .END
@@ -3394,12 +3396,25 @@ TOOL: NULL
   ACCEL 70 ALWAYS
   DECEL 70 ALWAYS
   WHILE TRUE DO
+    IF SIG(clench) THEN
+      IF NOT SIG(hand_clench_state) THEN
+        CLOSES
+        TWAIT 0.5
+        SIGNAL hand_clench_state
+      END
+    ELSE
+      IF SIG(hand_clench_state) THEN
+        OPENS
+        TWAIT 0.5
+        SIGNAL -hand_clench_state
+      END
+    END
+    ;
     IF SIG(go) THEN
       SIGNAL -go
       ;ACCEL val_accel
       ;DECEL val_accel
       LMOVE go_point
-      BREAK
     END
   END
 .END
@@ -3416,27 +3431,39 @@ TOOL: NULL
   .$value = $DECODE (.$data, .$separ, 0) ; Считывание команды
   .$void = $DECODE (.$data, .$separ, 1) ; удаление разделителя после команды
   .z = VAL (.$value)
-  ; .x = (ru[0]-ll[0]) * .x
-  ; .y = (ru[1]-ll[1]) * .y
-  ; .z = (ru[2]-ll[2]) * .z
+  .$clench = $DECODE (.$data, .$separ, 0)
+  ;
   POINT new_go_point = SHIFT (base_point BY .x, .y, .z)
+  ;
+  IF .$clench == "True" THEN
+    SIGNAL clench
+  ELSE
+    SIGNAL -clench
+  END
+  ;
 .END
 .PROGRAM run_to_point ()
   DECOMPOSE .p[0] = go_point
   DECOMPOSE .n[0] = new_go_point
   ;
+  IF SIG(hand_clench_state) THEN
+    DECOMPOSE .ll[0] = SHIFT(l_lower BY 0, 0, 100)
+  ELSE
+    DECOMPOSE .ll[0] = l_lower
+  END
+  ;
   FOR i=0 TO 2
-    IF (ru[i] - ll[i]) > 0 THEN
-      IF .n[i] < ll[i] THEN
-        .n[i] = ll[i]
+    IF (ru[i] - .ll[i]) > 0 THEN
+      IF .n[i] < .ll[i] THEN
+        .n[i] = .ll[i]
       ELSE
         IF .n[i] > ru[i] THEN
           .n[i] = ru[i]
         END
       END
     ELSE
-      IF .n[i] > ll[i] THEN
-        .n[i] = ll[i]
+      IF .n[i] > .ll[i] THEN
+        .n[i] = .ll[i]
       ELSE
         IF .n[i] < ru[i] THEN
           .n[i] = ru[i]
@@ -3469,11 +3496,16 @@ TOOL: NULL
   SIGNAL is_home
 .END
 .PROGRAM tcp_cycle.pc() #0
+  ; signals
   go = 2001
   is_home = 2002
+  clench = 2003
+  hand_clench_state = 2004
   SIGNAL -go
   SIGNAL -is_home
-  val_accel = 70
+  SIGNAL -clench
+  SIGNAL hand_clench_state
+  ; val_accel = 70
   ;
   POINT go_point = start
   DECOMPOSE ll[0] = l_lower
@@ -3482,12 +3514,13 @@ TOOL: NULL
   DECOMPOSE bp[0] = base_point
   ;
   WAIT SWITCH(POWER)
+  SINGULAR OFF
+  ;
   MC EXECUTE start
   WAIT SIG(is_home)
   TWAIT 1
   ;
   ; errstart.pc ON
-  SINGULAR OFF
   MC EXECUTE main
   ; Internal signals for IFP
   ; TCP/ip Settings
@@ -3523,6 +3556,7 @@ TOOL: NULL
             CALL tcp_log.pc("Go to point")
            SVALUE "home":
             POINT new_go_point = start
+            SIGNAL -clench
             CALL run_to_point
             CALL tcp_log.pc("Go home")
           END
@@ -3601,7 +3635,6 @@ TOOL: NULL
   .num = 0
   .max_length = 255
   TCP_RECV .ret, socket_id, .$recv_buf[1], .num, tcp_recv_time, .max_length
-  PRINT .ret
   ; Check data
   IF .ret < 0 THEN
     .$msg = ""

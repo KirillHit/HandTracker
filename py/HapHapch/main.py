@@ -19,7 +19,8 @@ from SettingClass import Settings
 
 
 class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-    end_delay = 1000
+    end_delay = 2000
+    calib_radius = 80
 
     def __init__(self):
         # Загрузка окна
@@ -27,11 +28,11 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Подключение потоков
-        self.CameraThread = VideoThread()
+        self.CameraThread = VideoThread(radius=self.calib_radius)
         self.RobotThread = Robot.Robot()
 
         # Контейнер для хранения положения руки
-        self.HandTracker = HandObject.HandTracker()
+        self.HandTracker = HandObject.HandTracker(radius=self.calib_radius)
 
         self.Settings = Settings()
 
@@ -43,8 +44,14 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
+        # Начало, остановка игры и таймеры
+        # region
         self.StartGameBut.clicked.connect(lambda: self.GameFlag(True))
         self.StopGameBut.clicked.connect(lambda: self.GameFlag(False))
+
+        self.timeEdit.timeChanged.connect(self.LabTimeUpdate)
+        self.Add_timeEdit.timeChanged.connect(self.LabTimeUpdate)
+        self.AddTime_checkBox.stateChanged.connect(self.LabTimeUpdate)
 
         self.game_timer = QTimer()
         self.game_timer.timeout.connect(self.StopGame)
@@ -52,6 +59,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.UpdateTimer)
         self.update_timer.setInterval(200)
+        # endregion
 
         # Настройка полей и ползунков
         # region
@@ -99,12 +107,26 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.LoadSettings()
         # Обновление данных класса HandTracker
         self.change_cam()
+        # Обновление таймера
+        self.LabTimeUpdate()
+
+    @pyqtSlot()
+    def LabTimeUpdate(self):
+        if not self.HandTracker.TrackingProcess:
+            if self.AddTime_checkBox.isChecked():
+                time = self.Add_timeEdit.time()
+            else:
+                time = self.timeEdit.time()
+            self.lab_game_timeout.setText(time.toString("mm:ss"))
 
     @pyqtSlot(bool)
     def GameFlag(self, game_flag):
         self.CameraThread.game_flag = game_flag
         if not game_flag:
-            self.StopGame()
+            self.game_timer.stop()
+            self.update_timer.stop()
+            self.HandTracker.TrackingProcess = False
+            self.LabTimeUpdate()
 
     @pyqtSlot()
     def StartGame(self):
@@ -119,13 +141,13 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def StopGame(self):
         self.game_timer.stop()
         self.update_timer.stop()
-        self.HandTracker.TrackingProcess = False
 
         # Задержка после окончания времени
         self.CameraThread.game_flag = False
         QTimer.singleShot(self.end_delay, lambda: self.GameFlag(True))
 
-        self.lab_game_timeout.setText("00:00")
+        self.HandTracker.TrackingProcess = False
+        self.LabTimeUpdate()
 
     @pyqtSlot()
     def UpdateTimer(self):
