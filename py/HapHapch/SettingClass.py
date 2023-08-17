@@ -26,7 +26,20 @@ class Settings:
                                 "Inv_Y": False,
                                 "game_time": "1:30",
                                 "add_game_time": "2:30"}
-    
+        self.DefaultsSetting = {"host": host,
+                                "port": "48569",
+                                "timeout": 30,
+                                "CalibDist": "500",
+                                "CalibCam": 100,
+                                "TimeApprox": 30,
+                                "FixedParam": 3,
+                                "FixedParam_Z": 4,
+                                "Change_XY": False,
+                                "Inv_X": False,
+                                "Inv_Y": False,
+                                "game_time": "1:30",
+                                "add_game_time": "2:30"}
+
     def __load_settings(self):
         if os.path.exists(self.__config_path):
             try:
