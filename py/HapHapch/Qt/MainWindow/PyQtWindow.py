@@ -598,7 +598,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "CatControl"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "HapHapch"))
         self.label_10.setText(_translate("MainWindow", "Камера"))
         self.Start_cam.setText(_translate("MainWindow", "Обновить"))
         self.label.setText(_translate("MainWindow", "Номер камеры:"))

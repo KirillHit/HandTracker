@@ -10,7 +10,8 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QApplication
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot, QTime
 from PyQt5.QtGui import QPixmap, QIcon, QImage
-from Qt.PyQtWindow import Ui_MainWindow
+from Qt.MainWindow.PyQtWindow import Ui_MainWindow
+from GameWindow import GameWindow as GameWindow_ui
 
 import HandObject
 import Robot
@@ -44,6 +45,10 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Чёрный фон камеры
         self.Lab_Cam.setStyleSheet("background-color: black; color: rgb(255, 255, 255); font: 75 14pt 'Calibri'")
 
+        self.GameWindow = GameWindow_ui()
+        self.GameWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
+        self.GameWindow.show()
+
         # Начало, остановка игры и таймеры
         # region
         self.StartGameBut.clicked.connect(lambda: self.GameFlag(True))
@@ -58,7 +63,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self.UpdateTimer)
-        self.update_timer.setInterval(200)
+        self.update_timer.setInterval(100)
         # endregion
 
         # Настройка полей и ползунков
@@ -117,7 +122,9 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 time = self.Add_timeEdit.time()
             else:
                 time = self.timeEdit.time()
-            self.lab_game_timeout.setText(time.toString("mm:ss"))
+            time = time.toString("mm:ss")
+            self.lab_game_timeout.setText(time)
+            self.GameWindow.set_time(time, self.GameWindow.progressBar.maximum())
 
     @pyqtSlot(bool)
     def GameFlag(self, game_flag):
@@ -153,7 +160,9 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def UpdateTimer(self):
         time = int(self.game_timer.remainingTime() / 1000)
         (minutes, seconds) = divmod(time, 60)
-        self.lab_game_timeout.setText(f"{minutes:02.0f}:{seconds:02.0f}")
+        time = f"{minutes:02.0f}:{seconds:02.0f}"
+        self.lab_game_timeout.setText(time)
+        self.GameWindow.set_time(time, self.game_timer.remainingTime() * self.GameWindow.progressBar.maximum() // self.game_timer.interval())
 
     @pyqtSlot(bool)
     def LoadSettings(self, defaults=False):
@@ -295,6 +304,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self.CameraThread.stop()
         self.RobotThread.stop()
+        self.GameWindow.close()
         event.accept()
 
 
