@@ -27,8 +27,6 @@ class Settings:
                                 "game_time": "1:30",
                                 "add_game_time": "2:30"}
 
-        #13123123
-
     def __load_settings(self):
         if os.path.exists(self.__config_path):
             try:
