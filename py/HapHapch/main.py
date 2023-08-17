@@ -48,6 +48,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.GameWindow = GameWindow_ui()
         self.GameWindow.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowMinimizeButtonHint | Qt.WindowMaximizeButtonHint)
         self.GameWindow.show()
+        self.GameWindow.resizeEvent(None)
 
         # Начало, остановка игры и таймеры
         # region
@@ -129,11 +130,14 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot(bool)
     def GameFlag(self, game_flag):
         self.CameraThread.game_flag = game_flag
+        self.GameWindow.description_lab.setText("Для начала игры поместите руку в зеленый круг.")
         if not game_flag:
             self.game_timer.stop()
             self.update_timer.stop()
             self.HandTracker.TrackingProcess = False
             self.LabTimeUpdate()
+
+            self.GameWindow.description_lab.setText("Игра остановлена.")
 
     @pyqtSlot()
     def StartGame(self):
@@ -143,6 +147,8 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             time = self.timeEdit.time()
         self.game_timer.start((time.minute() * 60 + time.second()) * 1000)
         self.update_timer.start()
+
+        self.GameWindow.description_lab.setText("Игра началась.")
 
     @pyqtSlot()
     def StopGame(self):
@@ -155,6 +161,11 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.HandTracker.TrackingProcess = False
         self.LabTimeUpdate()
+
+        self.GameWindow.description_lab.setText("Время закончилось.")
+        QTimer.singleShot(
+            self.end_delay,
+            lambda: self.GameWindow.description_lab.setText("Для начала игры поместите руку в зеленый круг."))
 
     @pyqtSlot()
     def UpdateTimer(self):
@@ -247,7 +258,10 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot(np.ndarray)
     def update_image(self, cv_img):
         """Updates the image_label with a new opencv image"""
-        self.Lab_Cam.setPixmap(self.convert_cv_qt(cv_img))
+        img = self.convert_cv_qt(cv_img)
+        self.Lab_Cam.setPixmap(img.scaled(self.Lab_Cam.size().width(), self.Lab_Cam.size().height(), Qt.KeepAspectRatio))
+        self.GameWindow.pix_lab.setPixmap(img.scaled(self.GameWindow.pix_lab.size().width(),
+                                                     self.GameWindow.pix_lab.size().height(), Qt.KeepAspectRatio))
 
     @pyqtSlot(np.single, np.single, np.single, bool, bool)
     def Hand_update(self, x, y, size_factor, hand_exist, compress):
@@ -297,9 +311,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
-        convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
-        p = convert_to_Qt_format.scaled(self.Lab_Cam.size().width(), self.Lab_Cam.size().height(), Qt.KeepAspectRatio)
-        return QPixmap.fromImage(p)
+        return QPixmap.fromImage(QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888))
 
     def closeEvent(self, event):
         self.CameraThread.stop()
