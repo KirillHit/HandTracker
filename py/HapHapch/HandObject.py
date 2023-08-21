@@ -31,6 +31,10 @@ class HandTracker:
         self.Inv_X = False
         self.Inv_Y = False
 
+    def stop_tracking(self):
+        self.TrackingProcess = False
+        self.StartTime = 0
+
     def give_Hand(self, center, size_factor, compress):
         now = time.time_ns()
 

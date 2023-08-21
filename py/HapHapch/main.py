@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QApplication
+from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt, QTimer, pyqtSlot, QTime
 from PyQt5.QtGui import QPixmap, QIcon, QImage
 from Qt.MainWindow.PyQtWindow import Ui_MainWindow
@@ -130,14 +130,16 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @pyqtSlot(bool)
     def GameFlag(self, game_flag):
         self.CameraThread.game_flag = game_flag
-        self.GameWindow.description_lab.setText("Для начала игры поместите руку в зеленый круг.")
-        if not game_flag:
-            self.game_timer.stop()
-            self.update_timer.stop()
-            self.HandTracker.TrackingProcess = False
-            self.LabTimeUpdate()
+        self.game_timer.stop()
+        self.update_timer.stop()
+        self.HandTracker.stop_tracking()
+        self.LabTimeUpdate()
 
-            self.GameWindow.description_lab.setText("Игра остановлена.")
+        if game_flag:
+            self.CalibMes()
+        else:
+            self.GameWindow.status_lab.setText("Игра остановлена")
+            self.GameWindow.description_lab.setText("<ul><li>Оператор остановил игру.</li></ul>")
 
     @pyqtSlot()
     def StartGame(self):
@@ -148,7 +150,12 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.game_timer.start((time.minute() * 60 + time.second()) * 1000)
         self.update_timer.start()
 
-        self.GameWindow.description_lab.setText("Игра началась.")
+        self.GameWindow.status_lab.setText("Игра началась")
+        self.GameWindow.description_lab.setText("<ul><li>Держите руку ладонью вверх.</li>"
+                                                "<li>Захват робота повторяет движения руки.</li>"
+                                                "<li>Двигайте рукой плавно.</li>"
+                                                "<li>Для сжатия захвата, сожмите руку.</li>"
+                                                "<li>В случае потери руки, поднесите её ближе к камере.</li></ul>")
 
     @pyqtSlot()
     def StopGame(self):
@@ -159,13 +166,18 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.CameraThread.game_flag = False
         QTimer.singleShot(self.end_delay, lambda: self.GameFlag(True))
 
-        self.HandTracker.TrackingProcess = False
+        self.HandTracker.stop_tracking()
         self.LabTimeUpdate()
 
-        self.GameWindow.description_lab.setText("Время закончилось.")
-        QTimer.singleShot(
-            self.end_delay,
-            lambda: self.GameWindow.description_lab.setText("Для начала игры поместите руку в зеленый круг."))
+        self.GameWindow.status_lab.setText("Время закончилось")
+        self.GameWindow.description_lab.setText(f"Игра перезапустится через {self.end_delay//1000} секунд.")
+        QTimer.singleShot(self.end_delay, self.CalibMes)
+
+    def CalibMes(self):
+        self.GameWindow.status_lab.setText("Калибровка камеры")
+        self.GameWindow.description_lab.setText("<ul><li>Держите руку <b>ладонью вверх</b> перед камерой.</li>"
+                                                "<li>Для начала игры поместите руку в зелёный круг в центре кадра.</li>"
+                                                "<li>При калибровки держите руку на уровне метки.</li></ul>")
 
     @pyqtSlot()
     def UpdateTimer(self):
