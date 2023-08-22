@@ -611,7 +611,7 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Cглаживание"))
         self.Lab_CalibCam.setText(_translate("MainWindow", "0"))
         self.Lab_FixedParam.setText(_translate("MainWindow", "0"))
-        self.label_7.setText(_translate("MainWindow", "Порог движения"))
+        self.label_7.setText(_translate("MainWindow", "Эквивалент Z"))
         self.lab.setText(_translate("MainWindow", "Эквивалент камеры"))
         self.Change_XY_Box.setText(_translate("MainWindow", "Поменять X и Y:"))
         self.Inv_X_Box.setText(_translate("MainWindow", "Инверсия X:"))

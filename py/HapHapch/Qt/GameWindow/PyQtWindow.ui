@@ -182,13 +182,13 @@
            </size>
           </property>
           <property name="maximum">
-           <number>10000</number>
+           <number>1000</number>
           </property>
           <property name="value">
-           <number>10000</number>
+           <number>1000</number>
           </property>
           <property name="alignment">
-           <set>Qt::AlignCenter</set>
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
           </property>
           <property name="textVisible">
            <bool>false</bool>

@@ -98,4 +98,4 @@ class HandTracker:
 
 
     def get_Hand(self):
-        return (self.Hand, self.Compress)
+        return self.Hand, self.Compress

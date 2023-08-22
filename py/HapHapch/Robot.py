@@ -56,7 +56,7 @@ class Robot(QThread):
                 if self.Home_pose:
                     message = "home;"
                 else:
-                    message = "go;" + ';'.join(["{:5.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
+                    message = "go;" + ';'.join(["{:.3f}".format(i) for i in self.Hand]) + f";{str(self.Compress)};"
                 try:
                     self.__connection.sendall(message.encode())
                     received_data = self.__connection.recv(1024).decode()
@@ -84,6 +84,14 @@ class Robot(QThread):
         self.Home_pose = True
         self.start()
 
+    def SetHand(self, hand_info):
+        self.Hand = hand_info[0]
+        self.Compress = hand_info[1]
+        self.Home_pose = False
+
+    def GoHome(self):
+        self.Home_pose = True
+
     def stop(self):
         try:
             self.server.close()
@@ -93,14 +101,6 @@ class Robot(QThread):
             self._run_flag = False
             self.wait()
             self.SendListUpdate.emit("Server closed.")
-
-    def SetHand(self, hand_info):
-        self.Hand = hand_info[0]
-        self.Compress = hand_info[1]
-        self.Home_pose = False
-
-    def GoHome(self):
-        self.Home_pose = True
 
 if __name__ == "__main__":
     #import cv2
