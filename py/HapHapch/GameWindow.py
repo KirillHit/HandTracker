@@ -3,9 +3,8 @@
 import os
 import random
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QSize, QTimer
-from PyQt5.QtGui import QIcon, QMovie, QPixmap, QImage
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QIcon, QPixmap
 import Qt
 
 from Qt.GameWindow.PyQtWindow import Ui_MainWindow
@@ -22,6 +21,8 @@ class GameWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.logo_lab.setPixmap(QPixmap("Qt/GameWindow/logo.png"))
 
         self.lcd_time.setDigitCount(5)
+
+        self.description_lab.setAlignment(QtCore.Qt.AlignJustify)
 
     def DoMes(self, mes=""):
         match mes:

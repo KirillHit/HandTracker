@@ -16,11 +16,11 @@
 .NETCONF     0.0.0.0,"",0.0.0.0,0.0.0.0,0.0.0.0,0.0.0.0,""
 .NETCONF2     0.0.0.0,0.0.0.0,0.0.0.0
 .ROBOTDATA1
-ZROBOT.TYPE    30  10   6   1        -706   RS007L-B001 ( 2023-08-02 20:18 )
+ZROBOT.TYPE    30  10   6   1        -706   RS007L-B001 ( 2023-08-24 19:51 )
 ZSYSTEM         1   5         -91
 ZLINEAR         0   0   0   0   0   0  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1  -1         179
 CONT_CODE     701      -10516
-ZZERO         268171847 268312240 268614662 268640255 268355506 268656678 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456   534794131
+ZZERO         268201226 268390348 268700639 268640250 268369720 268668610 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456 268435456   531500056
 ENDLESS_POS   0 100 1       -1516
 LANGUAGE      2
 ZSIGSPEC      256 256 512      -15361
@@ -56,7 +56,7 @@ ZSETKVFF_SVSPEC5    1.000   1.000   1.000   1.000   1.000   1.000  -1.000  -1.00
 ZSETKVFFACC_SVSPEC5    0.000   0.000   0.000   0.000   0.000   0.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -1832648705
 ZSETKVFFJRK_SVSPEC5    0.000   0.000   0.000   0.000   0.000   0.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -11.000 -1832648705
 ZSETKAFF2_SVSPEC5    1.000   1.000   1.000   1.000   1.000   1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000  -1.000 -1262485505
-ZSAVEMR             65503       65520          21          24       65526          27           0           0           0           0           0           0           0           0           0           0           0           0    -2949316
+ZSAVEMR             65507       65530          32          24       65527          28           0           0           0           0           0           0           0           0           0           0           0           0    -2949721
 ZRADIUS        1177.645  1177.645   722.645   247.645   247.645   145.674     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000     1.000  -287946702
 ZJTSPEED        370.000   310.000   410.000   550.000   550.000  1000.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000    10.000  -262086657
 ZACCTIME          0.400     0.600     0.400     0.200     0.200     0.200     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384     0.384   865872138
@@ -1335,38 +1335,38 @@ ZSWITCH ZFIX_CALL_1STEPPG ON   -523
 .END
 .OPE_INFO1
 OPEINFO  30 10 6 1  1623981901  ;(21/6/18 11:05:01) RS007L-B001 
-CONT_TIM  16.9 
-SERV_TIM  15.9 
-MTON_CNT  49 
+CONT_TIM  1.7 
+SERV_TIM  1.4 
+MTON_CNT  9 
 ESTP_CNT  0 
-BRKE_CNT  49 
-CON_PWR  0.128 
-SUP_PWR  0.128 
+BRKE_CNT  9 
+CON_PWR  0.012 
+SUP_PWR  0.012 
 REG_PWR  0.000 
-MOVE_TJT  2.4 3.0 2.6 0.0 2.0 1.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-DIST_DJT  47.666 53.970 47.392 0.000 37.634 42.830 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
-DIST_DJT_PLUS  23.845 27.021 23.715 0.000 19.011 21.373 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+MOVE_TJT  0.1 0.1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+DIST_DJT  1.096 1.280 0.712 0.000 1.036 0.951 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+DIST_DJT_PLUS  0.556 0.634 0.344 0.000 0.535 0.474 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
 OPEINFO TP_BKLIGHT  0 0.7 50000 
 OPEINFO MC  0 0 2000000 
 OPEINFO PARTS1  0 0 0 0 0 0 0 0 0 0 0 
 OPEINFO PARTS2  0 0 0 0 0 0 0 0 0 0 0 
 OPEINFO PARTS3  0 0 0 0 0 0 0 0 0 0 0 
 M_OPEINFO  30 10 6 1  1623981901  ;(21/6/18 11:05:01) RS007L-B001 
-M_CONT_TIM  16.9 
-M_SERV_TIM  15.9 
-M_MTON_CNT  49 
+M_CONT_TIM  1.7 
+M_SERV_TIM  1.4 
+M_MTON_CNT  9 
 M_ESTP_CNT  0 
-M_BRKE_CNT  49 
-M_CON_PWR  0.128 
-M_SUP_PWR  0.128 
+M_BRKE_CNT  9 
+M_CON_PWR  0.012 
+M_SUP_PWR  0.012 
 M_REG_PWR  0.000 
-M_MOVE_TJT  2.4 3.0 2.6 0.0 2.0 1.5 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-M_DIST_DJT  47.666 53.970 47.392 0.000 37.634 42.830 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
-M_DIST_DJT_PLUS  23.845 27.021 23.715 0.000 19.011 21.373 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+M_MOVE_TJT  0.1 0.1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
+M_DIST_DJT  1.096 1.280 0.712 0.000 1.036 0.951 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
+M_DIST_DJT_PLUS  0.556 0.634 0.344 0.000 0.535 0.474 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 0.000 
 M_MOVE_TJT_OVERDRIVE  0.0 0.0 0.0 0.0 0.0 0.0 
 M_DIST_DJT_OVERDRIVE  0.000 0.000 0.000 0.000 0.000 0.000 
 M_WARN_CJT_OVERDRIVE  0 0 0 0 0 0 
-HOUR_MTR  16.9 
+HOUR_MTR  1.7 
 .END
 .SYSDATA
 REG_POINT       0
@@ -2384,7 +2384,7 @@ SWITCH AFTER.WAIT.TMR  OFF
 SWITCH FLEXCOMP        OFF
 SWITCH MESSAGES        ON 
 SWITCH SCREEN          ON 
-SWITCH AUTOSTART.PC    OFF
+SWITCH AUTOSTART.PC    ON 
 SWITCH AUTOSTART2.PC   OFF
 SWITCH AUTOSTART3.PC   OFF
 SWITCH AUTOSTART4.PC   OFF
@@ -2457,7 +2457,7 @@ SWITCH SLOW_REP_MM     OFF
 .END
 .CONDITION
 AS_VER       ASF_01000001G
-ELOG_NUM             13
+ELOG_NUM              0
 CHK_ONCE      255
 MAN_SPEED     1
 CHK_SPEED     1
@@ -2498,10 +2498,12 @@ PRG_JT_DECEL    100.000   100.000   100.000   100.000   100.000   100.000   100.
 PRM_JT_ACCEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 PRM_JT_DECEL    100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000   100.000
 STEP1ENV_CALL_PRGNAME main
-STEP1ENV_PRG_STEP         10
-STEP2ENV0_CALL_PRGNAME tcp_cycle.pc
-STEP2ENV0_PRG_STEP          1
-USR_DO1      10100000000000000000000000000000
+STEP1ENV_PRG_STEP          1
+STEP2ENV0_CALL_PRGNAME autostart.pc
+STEP2ENV0_PRG_STEP         12
+STEP2ENV1_CALL_PRGNAME tcp_cycle.pc
+STEP2ENV1_PRG_STEP          1
+USR_DO1      10110000000000000000001000000000
 USR_DO2      00000000000000000000000000000000
 USR_DO3      00000000000000000000000000000000
 USR_DO4      00000000000000000000000000000000
@@ -3318,8 +3320,6 @@ EESTOP_THRESHOLD          2
 EESTOP_ERROR_CODE       0
 EESTOP_DELAY_TIME      3.000
 TP_RECINHI      0   0   0
-N_INT1    "go  "
-N_INT2    "is_home  "
 .END
 .SIG_COMMENT
 .END
@@ -3346,18 +3346,18 @@ KROSET R01
 0:run_to_point:F
 .p 
 .n 
+.ll 
 0:start:F
-0:tcp_cycle.pc:B
-.data_cycle 
+Group:tcp:1
+1:tcp_send.pc:B
+.buf_n 
 .ret 
-0:tcp_open.pc:B
-.i 
-.ip 
-.connect 
-.err_counter 
-0:tcp_close.pc:B
+1:tcp_receive.pc:B
 .ret 
-0:tcp_check.pc:B
+.num 
+.max_length 
+1:tcp_log.pc:B
+1:tcp_check.pc:B
 .p1 
 .p2 
 .p3 
@@ -3365,15 +3365,18 @@ KROSET R01
 .p5 
 .i 
 .ret 
-0:tcp_log.pc:B
-0:tcp_receive.pc:B
+1:tcp_close.pc:B
 .ret 
-.num 
-.max_length 
-0:tcp_send.pc:B
-.buf_n 
+1:tcp_open.pc:B
+.i 
+.ip 
+.connect 
+.err_counter 
+1:tcp_cycle.pc:B
+.data_cycle 
 .ret 
-0:errstart.pc:B
+0:autostart.pc:B
+0:init.pc:B
 @@@ TRANS @@@
 @@@ JOINTS @@@
 @@@ REALS @@@
@@ -3399,13 +3402,13 @@ TOOL: NULL
     IF SIG(clench) THEN
       IF NOT SIG(hand_clench_state) THEN
         CLOSES
-        TWAIT 0.5
+        TWAIT 1.5
         SIGNAL hand_clench_state
       END
     ELSE
       IF SIG(hand_clench_state) THEN
         OPENS
-        TWAIT 0.5
+        TWAIT 1.5
         SIGNAL -hand_clench_state
       END
     END
@@ -3495,37 +3498,98 @@ TOOL: NULL
   BREAK
   SIGNAL is_home
 .END
+.PROGRAM tcp_send.pc(.$msg)
+	.$send_buf[1] = .$msg
+	.buf_n = 1
+	TCP_SEND .ret, socket_id, .$send_buf[1], .buf_n, tcp_send_time
+.END
+.PROGRAM tcp_receive.pc (.$msg,.ret) ;
+  .num = 0
+  .max_length = 255
+  TCP_RECV .ret, socket_id, .$recv_buf[1], .num, tcp_recv_time, .max_length
+  ; Check data
+  IF .ret < 0 THEN
+    .$msg = ""
+    .ret = -1
+  ELSE
+    IF .num > 0 THEN
+      .$msg = .$recv_buf[1]
+      CALL tcp_log.pc ("Received message: " + .$msg)
+      ;IFPWPRINT 1=.$msg
+    ELSE
+      .$msg = ""
+    END
+  END
+.END
+.PROGRAM tcp_log.pc (.$msg) ;
+	IF debug THEN
+		PRINT $TIME + ": " + .$msg
+	END
+.END
+.PROGRAM tcp_check.pc () ;
+	CALL tcp_log.pc ("Checking tcp/ip status")
+	TCP_STATUS .p1, .p2[0], .p3[0], .p4[0], .p5[0], .$p6[0]
+	IF .p1 <> 0 THEN
+		CALL tcp_log.pc ("Found " + $ENCODE (.p1) + " active sockets:")
+		FOR .i = 0 TO .p1 - 1
+			CALL tcp_log.pc ("1: " + " ---------->")
+			CALL tcp_log.pc ("Port: " + $ENCODE (.p2[.i]))
+			CALL tcp_log.pc ("Socket: " + $ENCODE (.p3[.i]))
+			CALL tcp_log.pc ("IP: " + .$p6[.i])
+			;
+			IF .p3[.i] <> 0 THEN
+				TCP_CLOSE .ret, .p3[.i]
+				CALL tcp_log.pc ("Socket closed")
+			END
+			CALL tcp_log.pc ("----------")
+		END
+	ELSE
+		CALL tcp_log.pc ("Tcp/ip status OK")
+	END
+.END
+.PROGRAM tcp_close.pc () ;
+	CALL tcp_log.pc ("Closing connection")
+	TCP_CLOSE .ret, socket_id
+	CALL tcp_log.pc ("Connection closed")
+.END
+.PROGRAM tcp_open.pc () ;
+	; Check socket
+	CALL tcp_check.pc
+	; Get current IP
+	.$tcp_adr = $tcp_ip
+	FOR .i = 1 TO 4
+		.$ip = $DECODE (.$tcp_adr, ".", 0)
+		.ip[.i] = VAL (.$ip)
+		IF .i < 4 THEN
+			.$ip = $DECODE (.$tcp_adr, ".", 1)
+		END
+	END
+	; Connecting
+	CALL tcp_log.pc ("Connecting to: " + $tcp_ip)
+	.connect = TRUE
+	.err_counter = 0
+	WHILE .connect DO
+		TCP_CONNECT socket_id, tcp_port, .ip[1], tcp_conn_time
+		IF socket_id < 0 THEN
+			IF .err_counter >= 5 THEN
+				CALL tcp_log.pc ("Number of connection attempts exceeded")
+				socket_id = -1
+				.connect = FALSE
+			ELSE
+				.err_counter = .err_counter + 1
+				CALL tcp_log.pc ("Connection failed. Attempt: " + $ENCODE (.err_counter))
+			END
+		ELSE
+			CALL tcp_log.pc ("Connection successfull with socket id: " + $ENCODE (socket_id))
+			.connect = FALSE
+		END
+	END
+.END
 .PROGRAM tcp_cycle.pc() #0
-  ; signals
-  go = 2001
-  is_home = 2002
-  clench = 2003
-  hand_clench_state = 2004
-  SIGNAL -go
-  SIGNAL -is_home
-  SIGNAL -clench
-  SIGNAL hand_clench_state
-  ; val_accel = 70
-  ;
-  POINT go_point = start
-  DECOMPOSE ll[0] = l_lower
-  DECOMPOSE ru[0] = r_upper
-  POINT base_point = SHIFT(l_lower by (ru[0]-ll[0])/2, (ru[1]-ll[1])/2,(ru[2]-ll[2])/2)
-  DECOMPOSE bp[0] = base_point
-  ;
-  WAIT SWITCH(POWER)
-  SINGULAR OFF
-  ;
-  MC EXECUTE start
-  WAIT SIG(is_home)
-  TWAIT 1
-  ;
-  ; errstart.pc ON
-  MC EXECUTE main
   ; Internal signals for IFP
   ; TCP/ip Settings
-  tcp_port = 48569
-  $tcp_ip = "192.168.0.15"
+  ; tcp_port = 48569
+  ; $tcp_ip = "192.168.0.15"
   tcp_send_time = 5
   tcp_conn_time = 8
   tcp_recv_time = 5
@@ -3567,104 +3631,53 @@ TOOL: NULL
     TWAIT 0.25
   END
 .END
-.PROGRAM tcp_open.pc () ;
-	; Check socket
-	CALL tcp_check.pc
-	; Get current IP
-	.$tcp_adr = $tcp_ip
-	FOR .i = 1 TO 4
-		.$ip = $DECODE (.$tcp_adr, ".", 0)
-		.ip[.i] = VAL (.$ip)
-		IF .i < 4 THEN
-			.$ip = $DECODE (.$tcp_adr, ".", 1)
-		END
-	END
-	; Connecting
-	CALL tcp_log.pc ("Connecting to: " + $tcp_ip)
-	.connect = TRUE
-	.err_counter = 0
-	WHILE .connect DO
-		TCP_CONNECT socket_id, tcp_port, .ip[1], tcp_conn_time
-		IF socket_id < 0 THEN
-			IF .err_counter >= 5 THEN
-				CALL tcp_log.pc ("Number of connection attempts exceeded")
-				socket_id = -1
-				.connect = FALSE
-			ELSE
-				.err_counter = .err_counter + 1
-				CALL tcp_log.pc ("Connection failed. Attempt: " + $ENCODE (.err_counter))
-			END
-		ELSE
-			CALL tcp_log.pc ("Connection successfull with socket id: " + $ENCODE (socket_id))
-			.connect = FALSE
-		END
-	END
+.PROGRAM autostart.pc () ; 
+  CALL init.pc
+  ;
+  WAIT SWITCH(POWER)
+  ;
+  MC EXECUTE start
+  WAIT SIG(is_home)
+  TWAIT 1
+  ;
+  ; errstart.pc ON
+  PCEXECUTE 2: tcp_cycle.pc
+  MC EXECUTE main
+  ;
 .END
-.PROGRAM tcp_close.pc () ;
-	CALL tcp_log.pc ("Closing connection")
-	TCP_CLOSE .ret, socket_id
-	CALL tcp_log.pc ("Connection closed")
-.END
-.PROGRAM tcp_check.pc () ;
-	CALL tcp_log.pc ("Checking tcp/ip status")
-	TCP_STATUS .p1, .p2[0], .p3[0], .p4[0], .p5[0], .$p6[0]
-	IF .p1 <> 0 THEN
-		CALL tcp_log.pc ("Found " + $ENCODE (.p1) + " active sockets:")
-		FOR .i = 0 TO .p1 - 1
-			CALL tcp_log.pc ("1: " + " ---------->")
-			CALL tcp_log.pc ("Port: " + $ENCODE (.p2[.i]))
-			CALL tcp_log.pc ("Socket: " + $ENCODE (.p3[.i]))
-			CALL tcp_log.pc ("IP: " + .$p6[.i])
-			;
-			IF .p3[.i] <> 0 THEN
-				TCP_CLOSE .ret, .p3[.i]
-				CALL tcp_log.pc ("Socket closed")
-			END
-			CALL tcp_log.pc ("----------")
-		END
-	ELSE
-		CALL tcp_log.pc ("Tcp/ip status OK")
-	END
-.END
-.PROGRAM tcp_log.pc (.$msg) ;
-	IF debug THEN
-		PRINT $TIME + ": " + .$msg
-	END
-.END
-.PROGRAM tcp_receive.pc (.$msg,.ret) ;
-  .num = 0
-  .max_length = 255
-  TCP_RECV .ret, socket_id, .$recv_buf[1], .num, tcp_recv_time, .max_length
-  ; Check data
-  IF .ret < 0 THEN
-    .$msg = ""
-    .ret = -1
-  ELSE
-    IF .num > 0 THEN
-      .$msg = .$recv_buf[1]
-      CALL tcp_log.pc ("Received message: " + .$msg)
-      ;IFPWPRINT 1=.$msg
-    ELSE
-      .$msg = ""
-    END
-  END
-.END
-.PROGRAM tcp_send.pc(.$msg)
-	.$send_buf[1] = .$msg
-	.buf_n = 1
-	TCP_SEND .ret, socket_id, .$send_buf[1], .buf_n, tcp_send_time
-.END
-.PROGRAM errstart.pc ()
-  PRINT "123"
-  ;MC EXECUTE main
+.PROGRAM init.pc ()
+  ; signals
+  go = 2001
+  is_home = 2002
+  clench = 2003
+  hand_clench_state = 2004
+  SIGNAL -go
+  SIGNAL -is_home
+  SIGNAL -clench
+  SIGNAL hand_clench_state
+  ; val_accel = 70
+  ;
+  POINT go_point = start
+  DECOMPOSE ll[0] = l_lower
+  DECOMPOSE ru[0] = r_upper
+  POINT base_point = SHIFT(l_lower by (ru[0]-ll[0])/2, (ru[1]-ll[1])/2,(ru[2]-ll[2])/2)
+  DECOMPOSE bp[0] = base_point
+  ;
+  SINGULAR OFF
 .END
 .TRANS
 l_lower 299.971252 309.993347 -200.002869 27.070292 179.985001 27.086742
 r_upper 640.001892 -290.010681 299.996155 27.698650 179.973282 27.729488
-go_point 454.332581 104.338333 23.236643 27.070292 179.985001 27.086742
+go_point 490.561584 -168.434662 -200.002869 27.070292 179.985001 27.086742
 start 300.002380 -0.004570 199.994202 -0.327290 179.999176 -0.327300
 .END
 .REALS
 go = 2001
 is_home = 2002
+.END
+.INTEGER
+@tcp_port = 48569
+.END
+.STRINGS
+$tcp_ip = "192.168.0.15"
 .END
