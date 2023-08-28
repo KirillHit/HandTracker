@@ -73,20 +73,17 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Настройка полей и ползунков
         # region
         self.CalibCam.valueChanged['int'].connect(lambda a: self.Lab_CalibCam.setNum(a / 100))
-        self.FixedParam.valueChanged['int'].connect(self.Lab_FixedParam.setNum)
+        self.CalibCam_Z.valueChanged['int'].connect(lambda a: self.Lab_CalibCam_Z.setNum(a / 100))
         self.TimeApprox.valueChanged['int'].connect(self.Lab_TimeApprox.setNum)
-        self.FixedParam_Z.valueChanged['int'].connect(self.Lab_FixedParam_Z.setNum)
 
-        self.Lab_CalibCam.setText(str(self.CalibCam.value()))
-        self.Lab_FixedParam.setText(str(self.FixedParam.value()))
+        self.Lab_CalibCam.setText(str(self.CalibCam.value()/100))
+        self.Lab_CalibCam_Z.setText(str(self.CalibCam_Z.value()/100))
         self.Lab_TimeApprox.setText(str(self.TimeApprox.value()))
-        self.Lab_FixedParam_Z.setText(str(self.FixedParam_Z.value()))
 
         self.CalibDist.editingFinished.connect(self.change_cam)
         self.CalibCam.valueChanged.connect(self.change_cam)
-        self.FixedParam.valueChanged.connect(self.change_cam)
+        self.CalibCam_Z.valueChanged.connect(self.change_cam)
         self.TimeApprox.valueChanged.connect(self.change_cam)
-        self.FixedParam_Z.valueChanged.connect(self.change_cam)
         self.FrequencySlender.valueChanged.connect(self.change_cam)
         self.Change_XY_Box.stateChanged.connect(self.change_cam)
         self.Inv_X_Box.stateChanged.connect(self.change_cam)
@@ -188,8 +185,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.CalibDist.setText(Settings["CalibDist"])
             self.CalibCam.setValue(Settings["CalibCam"])
             self.TimeApprox.setValue(Settings["TimeApprox"])
-            self.FixedParam.setValue(Settings["FixedParam"])
-            self.FixedParam_Z.setValue(Settings["FixedParam_Z"])
+            self.CalibCam_Z.setValue(Settings["CalibCam_Z"])
             self.IpLineEdit.setText(f"{Settings['host']}:{Settings['port']}")
             self.FrequencySlender.setValue(Settings["timeout"])
             self.Change_XY_Box.setChecked(Settings["Change_XY"])
@@ -206,8 +202,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Settings = {"CalibDist": self.CalibDist.text(),
                     "CalibCam": self.CalibCam.value(),
                     "TimeApprox": self.TimeApprox.value(),
-                    "FixedParam": self.FixedParam.value(),
-                    "FixedParam_Z": self.FixedParam_Z.value(),
+                    "CalibCam_Z": self.CalibCam_Z.value(),
                     "host": self.IpLineEdit.text().split(':')[0],
                     "port": self.IpLineEdit.text().split(':')[1],
                     "timeout": self.FrequencySlender.value(),
@@ -245,8 +240,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def change_cam(self):
         self.HandTracker.CalibDist = int(self.CalibDist.text())
         self.HandTracker.CalibCam = int(self.CalibCam.value()) / 100
-        self.HandTracker.FixedParam = int(self.FixedParam.value())
-        self.HandTracker.FixedParam_Z = int(self.FixedParam_Z.value())
+        self.HandTracker.CalibCam_Z = int(self.CalibCam_Z.value()) / 100
         # self.HandTracker.TimeApprox = int(self.TimeApprox.value())
         # self.HandTracker.LenApprox = 60 * int(self.TimeApprox.value()) // 1000
         self.HandTracker.NewAveragingLen(int(self.TimeApprox.value()))

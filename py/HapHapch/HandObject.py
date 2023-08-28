@@ -14,6 +14,7 @@ class HandTracker:
         self.Radius = radius
         self.CalibDist = 500
         self.CalibCam = 1
+        self.CalibCam_Z = 1
 
         self.StartTime = 0
         self.PrevTime = 0
@@ -59,7 +60,7 @@ class HandTracker:
         else:
             self.cam_z = self.CalibDist * self.SaveSize / size_factor
 
-            self.Real_z = self.CalibDist - self.cam_z
+            self.Real_z = (self.CalibDist - self.cam_z) * self.CalibCam_Z
             self.Real_x = self.CalibCam * self.cam_z * center[0] / self.CalibDist
             self.Real_y = self.CalibCam * self.cam_z * center[1] / self.CalibDist
 
