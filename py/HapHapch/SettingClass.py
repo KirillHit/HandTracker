@@ -13,6 +13,11 @@ class Settings:
         except Exception as e:
             host = ''
             print(e)
+
+        self.__load_settings()
+        self.config["host"] = host
+        self.save_settings(self.config)
+
         self.DefaultsSetting = {"host": host,
                                 "port": "48569",
                                 "timeout": 30,

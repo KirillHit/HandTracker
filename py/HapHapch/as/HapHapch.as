@@ -3335,6 +3335,8 @@ HapHapch
 
 28.08.2023 19:31:57
 
+30.08.2023 15:53:21
+
 @@@ INSPECTION @@@
 @@@ CONNECTION @@@
 KROSET R01
@@ -3522,6 +3524,7 @@ TOOL: NULL
       ;IFPWPRINT 1=.$msg
     ELSE
       .$msg = ""
+      .ret = -1
     END
   END
 .END
@@ -3593,7 +3596,7 @@ TOOL: NULL
   ; Internal signals for IFP
   ; TCP/ip Settings
   tcp_port = 48569
-  $tcp_ip = "192.168.0.15"
+  $tcp_ip = "192.168.194.135"
   tcp_send_time = 5
   tcp_conn_time = 8
   tcp_recv_time = 5

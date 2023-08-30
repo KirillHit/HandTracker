@@ -12,6 +12,7 @@ class Robot(QThread):
 
         self._run_flag = False
         self.is_connected = False
+        self.server_flag = False
 
         self.host = ''
         self.port = 48569
@@ -30,24 +31,35 @@ class Robot(QThread):
         if self.debug_mode:
             print(msg)
 
-    def __connect(self):
+    def __start_server(self):
         self.SendListUpdate.emit("Server started. Waiting for connect...")
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((self.host, int(self.port)))
-        self.server.listen()
+        try:
+            self.server.bind((self.host, int(self.port)))
+            self.server.listen()
+            self.server_flag = True
+        except Exception as e:
+            self.SendListUpdate.emit("Server error.")
+            self.__print_debug(e)
+            self.stop()
+
+    def __connect(self):
         try:
             self.__connection, ip_address = self.server.accept()
             self.__connection.settimeout(self.timeout)
             self.SendListUpdate.emit(f"Client with IP {ip_address} was connected")
             self.is_connected = True
         except Exception as e:
-            pass
+            self.SendListUpdate.emit("Connection error.")
+            self.__print_debug(e)
 
     def run(self):
         real_time = QTime()
         time = QTime()
         time.start()
         while self._run_flag:
+            if not self.server_flag:
+                self.__start_server()
             if not self.is_connected:
                 self.__connect()
             elif time.elapsed() > self.sleep_time:
@@ -69,11 +81,11 @@ class Robot(QThread):
                             self.__connection.close()
                         except Exception as e:
                             self.__print_debug(e)
-                    print("Connection broken or timeout exceeded. Restarting server")
+                    self.__print_debug("Connection broken or timeout exceeded. Restarting server")
 
-    def start_server(self, port, host, timeout):
-        self.host = port
-        self.port = host
+    def start_server(self, host, port, timeout):
+        self.host = host
+        self.port = port
         self.timeout = timeout
 
         if self._run_flag:
@@ -93,14 +105,22 @@ class Robot(QThread):
         self.Home_pose = True
 
     def stop(self):
-        try:
-            self.server.close()
-        except Exception as e:
-            print(e)
         if self._run_flag:
             self._run_flag = False
-            self.wait()
-            self.SendListUpdate.emit("Server closed.")
+            self.terminate()
+        if self.is_connected:
+            try:
+                self.__connection.close()
+                self.is_connected = False
+            except Exception as e:
+                self.__print_debug(e)
+        try:
+            self.server.close()
+            self.server_flag = False
+            self.is_connected = False
+        except Exception as e:
+            self.__print_debug(e)
+        self.SendListUpdate.emit("Server closed.")
 
 if __name__ == "__main__":
     #import cv2

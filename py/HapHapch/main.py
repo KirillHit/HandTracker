@@ -313,7 +313,6 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def closeEvent(self, event):
         self.RobotThread.stop()
         self.CameraThread.stop()
-        time.sleep(2)
         self.RobotThread.quit()
         self.CameraThread.quit()
         self.GameWindow.close()
