@@ -52,9 +52,9 @@
           <property name="font">
            <font>
             <family>Calibri</family>
-            <pointsize>24</pointsize>
+            <pointsize>16</pointsize>
             <weight>75</weight>
-            <italic>true</italic>
+            <italic>false</italic>
             <bold>true</bold>
             <underline>false</underline>
             <strikeout>false</strikeout>
@@ -261,13 +261,13 @@
             <property name="font">
              <font>
               <family>Calibri</family>
-              <pointsize>18</pointsize>
+              <pointsize>16</pointsize>
               <weight>50</weight>
               <bold>false</bold>
              </font>
             </property>
             <property name="styleSheet">
-             <string notr="true">color: rgb(0, 170, 0)</string>
+             <string notr="true">color: rgb(0, 0, 0);</string>
             </property>
             <property name="frameShape">
              <enum>QFrame::Panel</enum>
