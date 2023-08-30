@@ -3320,6 +3320,8 @@ EESTOP_THRESHOLD          2
 EESTOP_ERROR_CODE       0
 EESTOP_DELAY_TIME      3.000
 TP_RECINHI      0   0   0
+N_INT1    "go  "
+N_INT2    "is_home  "
 .END
 .SIG_COMMENT
 .END
@@ -3330,6 +3332,8 @@ TP_RECINHI      0   0   0
 HapHapch
 @@@ HISTORY @@@
 24.07.2023 17:42:41
+
+28.08.2023 19:31:57
 
 @@@ INSPECTION @@@
 @@@ CONNECTION @@@
@@ -3588,8 +3592,8 @@ TOOL: NULL
 .PROGRAM tcp_cycle.pc() #0
   ; Internal signals for IFP
   ; TCP/ip Settings
-  ; tcp_port = 48569
-  ; $tcp_ip = "192.168.0.15"
+  tcp_port = 48569
+  $tcp_ip = "192.168.0.15"
   tcp_send_time = 5
   tcp_conn_time = 8
   tcp_recv_time = 5
