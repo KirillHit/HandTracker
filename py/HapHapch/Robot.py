@@ -1,6 +1,6 @@
 import socket
 from PyQt5.QtCore import QThread, pyqtSignal, QTime, Qt
-
+import time
 
 class Robot(QThread):
     GetHand = pyqtSignal()
@@ -55,15 +55,15 @@ class Robot(QThread):
 
     def run(self):
         real_time = QTime()
-        time = QTime()
-        time.start()
+        timer = QTime()
+        timer.start()
         while self._run_flag:
             if not self.server_flag:
                 self.__start_server()
             if not self.is_connected:
                 self.__connect()
-            elif time.elapsed() > self.sleep_time:
-                time.start()
+            elif timer.elapsed() >= self.sleep_time:
+                timer.start()
                 self.GetHand.emit()
                 if self.Home_pose:
                     message = "home;"
@@ -82,6 +82,8 @@ class Robot(QThread):
                         except Exception as e:
                             self.__print_debug(e)
                     self.__print_debug("Connection broken or timeout exceeded. Restarting server")
+            else:
+                time.sleep((self.sleep_time - timer.elapsed())/1000)
 
     def start_server(self, host, port, timeout):
         self.host = host

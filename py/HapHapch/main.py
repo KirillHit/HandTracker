@@ -223,7 +223,7 @@ class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         except Exception:
             self.showDialog("Некорректный адрес: " + port_host)
             return
-        timeout = self.FrequencySlender.value()
+        timeout = 8
         self.RobotThread.start_server(port, host, timeout)
 
     @pyqtSlot()
