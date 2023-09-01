@@ -1,5 +1,5 @@
 import socket
-from PyQt5.QtCore import QThread, pyqtSignal, QTime, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, QTime, Qt, QTimer
 import time
 
 class Robot(QThread):
@@ -26,6 +26,22 @@ class Robot(QThread):
         self.sleep_time = 30
 
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self.server.settimeout(self.timeout)
+
+        ###################################
+        self.i = 0
+        self.ttt = QTimer()
+        self.ttt.timeout.connect(self.timeeer)
+        self.ttt.setInterval(1000)
+        self.ttt.start()
+        #######################3
+
+    ##############################
+    def timeeer(self):
+        print(self.i)
+        self.i = 0
+
+    ##############################
 
     def __print_debug(self, msg):
         if self.debug_mode:
@@ -34,6 +50,7 @@ class Robot(QThread):
     def __start_server(self):
         self.SendListUpdate.emit("Server started. Waiting for connect...")
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #self.server.settimeout(self.timeout)
         try:
             self.server.bind((self.host, int(self.port)))
             self.server.listen()
@@ -73,6 +90,9 @@ class Robot(QThread):
                     self.__connection.sendall(message.encode())
                     received_data = self.__connection.recv(1024).decode()
                     self.SendListUpdate.emit(f"{real_time.currentTime().toString(format=Qt.ISODateWithMs)} sent: {message} received: {received_data}")
+                    #################
+                    self.i += 1
+                    #################
                 except Exception as e:
                     self.__print_debug(e)
                     if self.is_connected:

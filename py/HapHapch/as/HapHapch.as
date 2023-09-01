@@ -3320,6 +3320,8 @@ EESTOP_THRESHOLD          2
 EESTOP_ERROR_CODE       0
 EESTOP_DELAY_TIME      3.000
 TP_RECINHI      0   0   0
+N_INT1    "go  "
+N_INT2    "is_home  "
 .END
 .SIG_COMMENT
 .END
@@ -3628,7 +3630,7 @@ go_to:
   ; Internal signals for IFP
   ; TCP/ip Settings
   tcp_port = 48569
-  $tcp_ip = "192.168.194.135"
+  $tcp_ip = "192.168.0.175"
   tcp_send_time = 5
   tcp_conn_time = 8
   tcp_recv_time = 8
