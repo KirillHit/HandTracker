@@ -23,7 +23,7 @@ from SettingClass import Settings
 
 class RobotWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     end_delay = 2000
-    calib_radius = 80
+    calib_radius = 300
 
     def __init__(self):
         # Загрузка окна
