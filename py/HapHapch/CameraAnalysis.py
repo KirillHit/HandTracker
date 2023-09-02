@@ -41,7 +41,7 @@ class VideoThread(QThread):
 
     def run(self):
         fps = 0
-        with self.mp_hands.Hands(model_complexity=1, max_num_hands=1, min_detection_confidence=0.1,
+        with self.mp_hands.Hands(model_complexity=1, max_num_hands=1, min_detection_confidence=0.02,
                                  min_tracking_confidence=0.05, static_image_mode=False) as hands:
             while self._run_flag:
                 success, image = self.cap.read()
