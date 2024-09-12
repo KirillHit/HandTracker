@@ -1,0 +1,1 @@
+{"host": "127.0.1.1", "port": "48569", "timeout": 4, "CalibDist": "1000", "CalibCam": 236, "TimeApprox": 1, "FixedParam": 0, "FixedParam_Z": 0, "Change_XY": true, "Inv_X": false, "Inv_Y": false, "game_time": "01:30", "add_game_time": "00:20", "CalibCam_Z": 100}

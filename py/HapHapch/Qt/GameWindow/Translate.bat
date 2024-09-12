@@ -1,1 +1,0 @@
-pyuic5 -x PyQtWindow.ui -o PyQtWindow.py

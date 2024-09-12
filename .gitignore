@@ -44,3 +44,8 @@ mediapipe/
 ros_resources/
 cpp/
 py/arc/
+
+.vscode
+.conda
+.venv
+__pycache__
